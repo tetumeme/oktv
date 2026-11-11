@@ -36,8 +36,8 @@
           ]
         },
         "playUrlMatch": [
-          "*/video.m3u8*",
-          "*/v.m3u8*"
+          "https://*/video.m3u8*",
+          "https://*/v.m3u8*"
         ],
         "spider": {
           "homeContent": {
