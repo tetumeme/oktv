@@ -188,15 +188,21 @@
                     vod_actor: pick(info, ['女演员', 'Actress', 'Actors']),
                     vod_director: pick(info, ['制作商', 'Maker']),
                     vod_content: desc.trim(),
-                    vod_play_from: '123AV',
-                    vod_play_url: '线路1$' + id
+                    vod_play_data: [{
+                        from: '123AV',
+                        media: [{
+                            name: '默认线路',
+                            type: 'webview',
+                            ext: { replace: { vod_id: id } }
+                        }]
+                    }]
                 }]
             };
         },
 
         // 返回 match，交给 WebView 嗅探 m3u8
         playerContent: function () {
-            return { parse: 0, jx: 0, type: 'match' };
+            return { type: 'match' };
         },
 
         searchContent: function (key, quick, pg) {
