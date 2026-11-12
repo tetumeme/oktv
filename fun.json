@@ -265,13 +265,6 @@
    "changeable": 1
   },
   {
-   "key": "色猫",
-   "name": "色猫 | 采集",
-   "type": 1,
-   "api": "https://caiji.semaozy.net/inc/apijson_vod.php",
-   "ext": "proxy"
-  },
-  {
    "key": "沙鱼",
    "name": "沙鱼 | 采集",
    "type": 1,
