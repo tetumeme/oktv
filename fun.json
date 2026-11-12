@@ -201,7 +201,7 @@
    },
    "api": "csp_GM",
    "ext": {
-    "userScript": "https://clun.top/js/netflav.user.js",
+    "userScript": "https://raw.githubusercontent.com/cluntop/tvbox/main/js/netflav.user.js",
     "debug": false,
     "webViewSettings": {
      "blockNetworkImage": true,
@@ -310,7 +310,7 @@
    },
    "api": "csp_GM",
    "ext": {
-    "userScript": "https://clun.top/js/missav.user.js",
+    "userScript": "https://raw.githubusercontent.com/cluntop/tvbox/main/js/missav.user.js",
     "debug": false,
     "webViewSettings": {
      "blockNetworkImage": true,
@@ -366,7 +366,7 @@
    },
    "api": "csp_GM",
    "ext": {
-    "userScript": "https://clun.top/js/supjav.user.js",
+    "userScript": "https://raw.githubusercontent.com/cluntop/tvbox/main/js/supjav.user.js",
     "debug": false,
     "webViewSettings": {
      "blockNetworkImage": true,
@@ -437,7 +437,7 @@
    },
    "api": "csp_GM",
    "ext": {
-    "userScript": "https://clun.top/js/xojav.user.js",
+    "userScript": "https://raw.githubusercontent.com/cluntop/tvbox/main/js/xojav.user.js",
     "debug": false,
     "webViewSettings": {
      "blockNetworkImage": true,
