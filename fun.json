@@ -265,13 +265,6 @@
    "changeable": 1
   },
   {
-   "key": "AIvin",
-   "name": "AIvin | 采集",
-   "type": 0,
-   "api": "http://lbapiby.com/api.php/provide/vod/at/xml",
-   "ext": "proxy"
-  },
-  {
    "key": "色猫",
    "name": "色猫 | 采集",
    "type": 1,
