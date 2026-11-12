@@ -36,7 +36,8 @@ BOOT_URLS = [
     "https://rolizxwnoble.buzz/vod/",
     "https://rolizxwnoble.buzz/",
 ]
-DEFAULT_HOST = "https://lactaskactand.aissdxi.buzz"
+DEFAULT_HOST = "https://aissdxi.buzz"
+PRIMARY_URL = "https://aissdxi.buzz"
 UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
@@ -133,21 +134,37 @@ class Spider(BaseSpider):
         if self._booted:
             return self.host
         import urllib.request
+        # 1) 主域优先：aissdxi.buzz 可直接访问，不跳随机子域
+        try:
+            req = urllib.request.Request(PRIMARY_URL, headers={"User-Agent": UA, "Accept": "*/*"})
+            resp = urllib.request.urlopen(req, timeout=12, context=self._ssl_ctx())
+            data = resp.read(2048)
+            final = resp.geturl() or PRIMARY_URL
+            try:
+                resp.close()
+            except Exception:
+                pass
+            p = urlsplit(final)
+            if p.scheme and p.netloc and b"<" in data[:512]:
+                self.host = "%s://%s" % (p.scheme, p.netloc)
+                self._booted = True
+                self._err = ""
+                return self.host
+        except Exception as e:
+            self._err = type(e).__name__
+        # 2) 旧入口 302 兜底（主域换掉时用）
         for u in BOOT_URLS:
             try:
                 req = urllib.request.Request(u, headers={"User-Agent": UA, "Accept": "*/*"})
                 resp = urllib.request.urlopen(req, timeout=12, context=self._ssl_ctx())
                 final = resp.geturl() or u
-                try:
-                    resp.read(256)
-                except Exception:
-                    pass
+                data = resp.read(512)
                 try:
                     resp.close()
                 except Exception:
                     pass
                 p = urlsplit(final)
-                if p.scheme and p.netloc:
+                if p.scheme and p.netloc and b"<" in data[:512]:
                     self.host = "%s://%s" % (p.scheme, p.netloc)
                     self._booted = True
                     self._err = ""
@@ -186,6 +203,14 @@ class Spider(BaseSpider):
 
     def _html(self, path, ajax=False):
         url = path if path.startswith("http") else self.host + path
+        txt = self._open(url, referer=self.host + "/", ajax=ajax)
+        if txt and len(txt) > 500:
+            return txt
+        # host 可能已轮换，重新解析后重试一次
+        self._booted = False
+        self._boot()
+        if not path.startswith("http"):
+            url = self.host + path
         return self._open(url, referer=self.host + "/", ajax=ajax)
 
     def _abs(self, u):
@@ -259,10 +284,6 @@ class Spider(BaseSpider):
             path += "page/%d/" % page
         self._boot()
         html = self._html(path)
-        if not html:
-            self._booted = False
-            self._boot()
-            html = self._html(path)
         cards = self._cards(html or "")
         return {"list": cards, "page": page, "pagecount": 1,
                 "limit": len(cards), "total": len(cards)}
