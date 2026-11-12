@@ -151,11 +151,8 @@
     "userScript": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/jable.user.js",
     "debug": false,
     "webViewSettings": {
-     "blockNetworkImage": true,
+     "blockNetworkImage": false,
      "blockList": [
-      "*.ico*",
-      "*.png*",
-      "*.css*",
       "https://*.adsco.re/*",
       "https://*.googleapis.com/*",
       "https://*.googlesyndication.com/*",
