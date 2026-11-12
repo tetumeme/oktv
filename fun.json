@@ -76,7 +76,7 @@
    "key": "py_花都",
    "name": "花都影院[py]",
    "type": 3,
-   "api": "https://clun.top/js/ss/花都影院.py",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/huadu.py",
    "ext": ""
   },
   {
