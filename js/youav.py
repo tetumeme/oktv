@@ -108,10 +108,11 @@ class Spider(BaseSpider):
         self._classes = cls
         if not cls:
             cls = [{"type_id": "22", "type_name": "日本AV"}]
-        cards = [self._item(it) for it in (j.get("list") or [])]
+        cards = []
+        j2 = self._api({"ac": "detail", "t": cls[0]["type_id"], "pg": 1})
+        cards = [self._item(it) for it in (j2.get("list") or [])]
         if not cards:
-            j2 = self._api({"ac": "videolist", "t": cls[0]["type_id"], "pg": 1})
-            cards = [self._item(it) for it in (j2.get("list") or [])]
+            cards = [self._item(it) for it in (j.get("list") or [])]
         return {"class": cls, "filters": {}, "list": cards}
 
     def homeVideoContent(self):
@@ -119,7 +120,7 @@ class Spider(BaseSpider):
 
     def categoryContent(self, tid, pg=1, filter=None, extend=None):
         page = int(pg) if str(pg).isdigit() else 1
-        j = self._api({"ac": "videolist", "t": str(tid), "pg": page})
+        j = self._api({"ac": "detail", "t": str(tid), "pg": page})
         cards = [self._item(it) for it in (j.get("list") or [])]
         pc = int(j.get("pagecount") or 1)
         return {"list": cards, "page": page, "pagecount": pc,
