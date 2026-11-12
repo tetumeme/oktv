@@ -272,23 +272,6 @@
    "ext": "proxy"
   },
   {
-   "key": "TGYunPan18pan",
-   "name": "TG|涩涩",
-   "searchable": 1,
-   "changeable": 1,
-   "type": 3,
-   "api": "csp_TGYunPan",
-   "timeout": 60,
-   "ext": {
-    "token": "https://clun.top/lib/tokenm.json",
-    "json": "https://raw.githubusercontent.com/fish2018/lib/main/json/18pan.json",
-    "keywords": "名称,片名,推荐",
-    "channellist": "CosMM18,avpush,ribenseyuge1,cilitu,cctav,ppg1314,avab01,SeseAnime,AVnew,jpccav,PornXOS,CCCTAV",
-    "proxy": "noproxy",
-    "danmu": true
-   }
-  },
-  {
    "key": "色播",
    "name": "色播[js]",
    "type": 3,
