@@ -241,23 +241,6 @@
    "ext": "null$$$https://sukebei.nyaa.si$$$proxy"
   },
   {
-   "key": "py_jable",
-   "name": "jable[py]",
-   "type": 3,
-   "api": "https://clun.top/js/ss/jable.py"
-  },
-  {
-   "key": "py_javdb",
-   "name": "javdb[py]",
-   "type": 3,
-   "searchable": 1,
-   "quickSearch": 1,
-   "filterable": 1,
-   "api": "https://clun.top/js/ss/javdb.py",
-   "order_num": 5,
-   "ext": ""
-  },
-  {
    "key": "py_18",
    "name": "🔞 | 快递",
    "type": 3,
