@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""乱伦仓库（rolizxwnoble 站群 → aissdxi.buzz）Python 点播源 — 自建维护版。
+"""AI绅士短剧（原乱伦仓库站群 → aissdxi.buzz）Python 点播源 — 自建维护版。
 
 站点变迁（2026-11 实测）：
 - 原 api（clun.top/js/ss/rolizxwnoble.py）对应的 host pnd27y1jh1.rolizxwnoble.buzz
@@ -79,7 +79,7 @@ class Spider(BaseSpider):
         self._err = ""
 
     def getName(self):
-        return "乱伦仓库"
+        return "AI绅士短剧"
 
     def init(self, extend=""):
         cfg = {}
@@ -359,7 +359,7 @@ class Spider(BaseSpider):
             "vod_pic": pic,
             "vod_content": "\n".join(lines),
             "vod_remarks": ("全%d集" % total) if total else "",
-            "vod_play_from": "乱伦仓库",
+            "vod_play_from": "AI绅士短剧",
             "vod_play_url": "#".join(["%s$%s" % (lb, pid) for lb, pid in eps]),
         }
 
