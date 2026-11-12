@@ -282,7 +282,8 @@ class Spider(_BaseSpider):
     def _get_bytes(self, url, headers=None):
         if getattr(self, "_destroyed", False):
             return b""
-        headers = headers or dict(self.headers)
+        headers = dict(headers or self.headers)
+        headers.setdefault("Accept-Encoding", "identity")
         timeout = self._timeout_value()
         try:
             if self.s is not None:
@@ -623,66 +624,140 @@ class Spider(_BaseSpider):
         html = self._req("/v/%s" % clean_id)
         if not html:
             return {"list": [], "msg": "详情页获取失败：%s" % clean_id}
-        vod_name = clean_id
+        info = self._parse_detail(html, clean_id)
+        vod_name = info.get("name") or clean_id
+        vod_pic = info.get("pic") or ""
+        type_name = info.get("tags") or "肉视频"
+        lines = []
+        if info.get("desc") and info.get("desc") != vod_name:
+            lines.append(info["desc"])
+        if info.get("vid"):
+            lines.append("【番号】%s" % info["vid"])
+        if info.get("duration"):
+            lines.append("【时长】%s" % info["duration"])
+        if info.get("tags"):
+            lines.append("【标签】%s" % info["tags"])
+        hot = []
+        if info.get("views"):
+            hot.append("%s 次观看" % info["views"])
+        if info.get("likes"):
+            hot.append("赞 %s" % info["likes"])
+        if hot:
+            lines.append("【热度】%s" % " · ".join(hot))
+        if info.get("series"):
+            if info.get("ep_label"):
+                lines.append("【系列】%s（%s）" % (info["series"], info["ep_label"]))
+            else:
+                lines.append("【系列】%s" % info["series"])
+        if info.get("ref"):
+            lines.append("【来源】%s" % info["ref"])
+        vod_content = "\n".join(lines)
+        eps = info.get("eps") or []
+        if len(eps) > 1:
+            play_url = "#".join(["%s$%s" % (label, eid) for label, eid in eps])
+            vod_remarks = info.get("ep_label") or ("共 %d 集" % len(eps))
+        else:
+            play_url = "正片播放$%s" % clean_id
+            vod_remarks = info.get("vid") or ""
+        vod = {"vod_id": clean_id, "vod_name": vod_name, "vod_remarks": vod_remarks, "vod_pic": vod_pic, "type_name": type_name, "vod_content": vod_content, "vod_play_from": self.getName(), "vod_play_url": play_url}
+        return {"list": [vod]}
+
+    def _fmt_dur(self, sec):
+        try:
+            sec = int(float(sec))
+        except Exception:
+            return ""
+        if sec <= 0:
+            return ""
+        h = sec // 3600
+        m = (sec % 3600) // 60
+        s2 = sec % 60
+        if h:
+            return "%d:%02d:%02d" % (h, m, s2)
+        return "%02d:%02d" % (m, s2)
+
+    def _parse_detail(self, html, clean_id):
+        out = {}
+        if not html:
+            return out
         m = re.search(r"<h1[^>]*>(.*?)</h1>", html, re.S)
         if m:
-            vod_name = self._clean(m.group(1)) or vod_name
-        vod_pic = ""
+            out["name"] = self._clean(m.group(1))
         m = re.search(r'<video[^>]+poster="([^"]+)"', html)
         if m:
-            vod_pic = m.group(1)
-        if not vod_pic:
+            out["pic"] = m.group(1)
+        if not out.get("pic"):
             m = re.search(r'coverImageUrl:"([^"]+)"', html)
             if m:
-                vod_pic = m.group(1)
-        tags = []
+                out["pic"] = m.group(1)
+        page_tags = []
         for m in re.finditer(r'href="(/t/[^"]+)"[^>]*>([^<]{1,30})<', html):
-            try:
-                name = self._clean(m.group(2))
-                if name and name not in tags and len(tags) < 10:
-                    tags.append(name)
-            except Exception:
-                continue
-        type_name = " • ".join(tags) if tags else "肉视频"
-        desc = ""
-        m = re.search(r'<meta[^>]+property="og:description"[^>]+content="([^"]+)"', html)
-        if not m:
-            m = re.search(r'<meta[^>]+name="description"[^>]+content="([^"]+)"', html)
+            nm = self._clean(m.group(2))
+            if nm and nm not in page_tags and len(page_tags) < 10:
+                page_tags.append(nm)
+        seg = ""
+        k = html.find('id:"%s"' % clean_id)
+        if k >= 0:
+            seg = html[k:k + 8000]
+        tag_list = []
+        if seg:
+            m = re.search(r'nameZh:"((?:[^"\\]|\\.)*)"', seg)
+            if m:
+                zh = self._clean(m.group(1).replace('\\"', '"'))
+                if zh:
+                    out["name"] = zh
+            m = re.search(r'description:"((?:[^"\\]|\\.)*)"', seg)
+            if m:
+                out["desc"] = self._clean(m.group(1).replace('\\"', '"'))
+            m = re.search(r'vid:(?:"([^"]*)"|null)', seg)
+            if m and m.group(1) and m.group(1) != "null":
+                out["vid"] = m.group(1)
+            m = re.search(r"duration:([0-9.]+)", seg)
+            if m:
+                out["duration"] = self._fmt_dur(m.group(1))
+            m = re.search(r"viewCount:(\d+)", seg)
+            if m:
+                out["views"] = m.group(1)
+            m = re.search(r"likeCount:(\d+)", seg)
+            if m:
+                out["likes"] = m.group(1)
+            m = re.search(r'ref:"(https?://[^"]+)"', seg)
+            if m:
+                out["ref"] = re.sub(r"^https?://", "", m.group(1)).split("/")[0]
+            m = re.search(r"episode:(\d+)", seg)
+            if m:
+                out["episode"] = int(m.group(1))
+            m = re.search(r"tagsZh:\x24R\[\d+\]=\[([^\]]*)\]", seg)
+            if m:
+                tag_list = [self._clean(x) for x in re.findall(r'"([^"]+)"', m.group(1))]
+            if not tag_list:
+                m = re.search(r"tags:\x24R\[\d+\]=\[([^\]]*)\]", seg)
+                if m:
+                    tag_list = [self._clean(x) for x in re.findall(r'"([^"]+)"', m.group(1))]
+        m = re.search(r'href="/s/[A-Za-z0-9]{6,40}"[^>]*>\s*<h2[^>]*>([^<]{1,80})</h2>', html)
         if m:
-            desc = self._clean(m.group(1))
-        main_name = ""
-        main_vid = ""
-        main_tags = []
-        try:
-            j = html.find('id:"%s"' % clean_id)
-            if j >= 0:
-                seg = html[j:j + 6000]
-                m2 = re.search(r'name:"((?:[^"\\]|\\.)*)"', seg)
-                if m2:
-                    raw_name = m2.group(1)
-                    try:
-                        main_name = raw_name.encode().decode("unicode_escape", "ignore") if "\\u" in raw_name else raw_name
-                    except Exception:
-                        main_name = raw_name
-                    main_name = self._clean(main_name.replace('\\"', '"'))
-                m2 = re.search(r'vid:(?:"([^"]*)"|null)', seg)
-                if m2 and m2.group(1) and m2.group(1) != "null":
-                    main_vid = m2.group(1)
-                m2 = re.search(r'tags:\$R\[\d+\]=\["([^"\]]+)"', seg)
-                if m2:
-                    main_tags = [self._clean(m2.group(1))]
-        except Exception:
-            pass
-        if main_name:
-            vod_name = main_name
-        if main_tags:
-            type_name = " • ".join(main_tags)
-        vid_label = main_vid
-        vod_content = desc
-        if vid_label:
-            vod_content = ("【番号】：%s\n%s" % (vid_label, desc)) if desc else ("【番号】：%s" % vid_label)
-        vod = {"vod_id": clean_id, "vod_name": vod_name, "vod_remarks": vid_label, "vod_pic": vod_pic, "type_name": type_name, "vod_content": vod_content, "vod_play_from": self.getName(), "vod_play_url": "正片播放$%s" % clean_id}
-        return {"list": [vod]}
+            sn = self._clean(m.group(1))
+            if sn and sn != out.get("name"):
+                out["series"] = sn
+        if tag_list:
+            out["tags"] = " · ".join(tag_list)
+        elif page_tags:
+            out["tags"] = " · ".join(page_tags)
+        eps = []
+        seen = set()
+        for m in re.finditer(r'href="/v/([A-Za-z0-9]{8,40})"((?:(?!href="/v/).){0,400}?)<span class="truncate">([^<]{1,24})</span>', html, re.S):
+            eid = m.group(1)
+            label = self._clean(m.group(3))
+            if not label or eid in seen:
+                continue
+            if not re.match(r"^(第\s*\d+\s*集|\d{1,4})$", label):
+                continue
+            seen.add(eid)
+            eps.append((label, eid))
+        out["eps"] = eps
+        if out.get("episode"):
+            out["ep_label"] = "第 %d 集" % out["episode"]
+        return out
 
     def _png_extract_m3u8(self, data):
         if not data or len(data) < 8:
@@ -762,15 +837,6 @@ class Spider(_BaseSpider):
             id = str(id[0]) if id else ""
         else:
             id = str(id or "")
-        if isinstance(flag, (list, tuple)):
-            flag = str(flag[0]) if flag else ""
-        else:
-            flag = str(flag or "")
-        if isinstance(vipFlags, str):
-            try:
-                vipFlags = json.loads(vipFlags) if vipFlags.strip().startswith(("[", "{")) else [vipFlags]
-            except Exception:
-                vipFlags = [vipFlags]
         clean_id = re.sub(r"^https?://[^/]+/v/", "", id).replace("/v/", "").strip().strip("/")
         if clean_id.startswith("http"):
             return {"parse": 0, "jx": 0, "playUrl": "", "url": clean_id, "header": {"User-Agent": self.headers["User-Agent"], "Referer": self.HOST + "/"}, "format": "application/x-mpegURL"}
@@ -785,13 +851,15 @@ class Spider(_BaseSpider):
             full = video_path
         else:
             full = self.HOST + video_path
-        raw = self._get_bytes(full, headers={"User-Agent": self.headers["User-Agent"], "Referer": "%s/v/%s" % (self.HOST, clean_id)})
+        referer = "%s/v/%s" % (self.HOST, clean_id)
+        raw = self._get_bytes(full, headers={"User-Agent": self.headers["User-Agent"], "Referer": referer})
         m3u8 = self._png_extract_m3u8(raw)
         if "#EXTM3U" not in m3u8:
-            return {"parse": 1, "jx": 0, "playUrl": "", "url": "%s/v/%s" % (self.HOST, clean_id), "header": {}}
-        proxy_m3u8 = self._proxy_url(clean_id, full)
-        play_url = full if (not proxy_m3u8) or ("127.0.0.1:9978" in proxy_m3u8) else proxy_m3u8
-        return {"parse": 0, "jx": 0, "playUrl": "", "url": play_url, "header": {"User-Agent": self.headers["User-Agent"], "Referer": self.HOST + "/"}, "format": "application/x-mpegURL"}
+            return {"parse": 1, "jx": 0, "playUrl": "", "url": referer, "header": {}}
+        proxy_url = self._proxy_url(clean_id, full)
+        if not proxy_url:
+            return {"parse": 0, "jx": 0, "playUrl": "", "url": full, "header": {"User-Agent": self.headers["User-Agent"], "Referer": referer}, "format": "application/x-mpegURL"}
+        return {"parse": 0, "jx": 0, "playUrl": "", "url": proxy_url, "header": {"User-Agent": self.headers["User-Agent"], "Referer": self.HOST + "/"}, "format": "application/x-mpegURL"}
 
     def localProxy(self, param):
         if isinstance(param, str):
@@ -809,56 +877,62 @@ class Spider(_BaseSpider):
         if not isinstance(param, dict):
             param = {}
         try:
-            ptype = str(param.get("type", ""))
+            import urllib.parse as _up
             target = str(param.get("url", "") or "")
-            if ptype in ("rou_hls", "m3u8", "ts", "mp4", "py", "proxy") and target:
-                import urllib.parse as _up
-                vid = str(param.get("vid", "") or "")
-                try:
-                    raw_parts = _up.urlsplit(target)
-                    inner = dict(_up.parse_qsl(raw_parts.query, keep_blank_values=True))
-                    if inner.get("url") and ("/proxy" in raw_parts.path or "127.0.0.1" in raw_parts.netloc):
-                        target = inner["url"]
-                        if not vid:
-                            vid = str(inner.get("vid", "") or "")
-                except Exception:
-                    target = _up.unquote(target)
-                vid = str(param.get("vid", "") or vid or "")
+            if not target:
+                return [404, "text/plain", b"Not Found", {}]
+            vid = str(param.get("vid", "") or "")
+            parts = _up.urlsplit(target)
+            inner = dict(_up.parse_qsl(parts.query, keep_blank_values=True))
+            if inner.get("url") and ("/proxy" in parts.path or "127.0.0.1" in parts.netloc):
+                target = inner["url"]
                 if not vid:
-                    m = re.search(r"/(?:api/)?hls/([A-Za-z0-9_-]+)", target)
-                    if m:
-                        vid = m.group(1)
-                if target.startswith("//"): 
-                    target = "https:" + target
-                if target.startswith("/"):
-                    target = self.HOST + target
-                if not target.lower().startswith("http"):
-                    return [404, "text/plain", b"Not Found", {}]
-                if "/api/hls/" in target and "?" not in target and ".png" not in target:
-                    raw = self._get_bytes(target, headers={"User-Agent": self.headers["User-Agent"], "Referer": self.HOST + "/"})
-                    m3u8 = self._png_extract_m3u8(raw)
-                    if "#EXTM3U" not in m3u8:
-                        return [404, "text/plain", b"Not Found", {}]
-                    lines = []
-                    for line in m3u8.splitlines():
-                        s = line.strip()
-                        if s.startswith("http"):
-                            lines.append(self._proxy_url(vid, s))
-                        elif s and not s.startswith("#"):
-                            lines.append(self._proxy_url(vid, s))
-                        else:
-                            lines.append(line)
-                    body = "\n".join(lines).encode("utf-8")
-                    return [200, "application/vnd.apple.mpegurl", body, {"Access-Control-Allow-Origin": "*"}]
-                raw = self._get_bytes(target, headers={"User-Agent": self.headers["User-Agent"], "Referer": self.HOST + "/"})
-                if not raw:
-                    return [404, "text/plain", b"Not Found", {}]
-                mp4 = self._png_extract_mp4(raw)
-                if not mp4:
-                    if b"#EXTM3U" in raw:
-                        return [200, "application/vnd.apple.mpegurl", raw, {"Access-Control-Allow-Origin": "*"}]
-                    return [404, "text/plain", b"Not Found", {}]
-                return [200, "video/mp2t", mp4, {"Access-Control-Allow-Origin": "*"}]
+                    vid = str(inner.get("vid", "") or "")
+            if target.startswith("//"):
+                target = "https:" + target
+            if target.startswith("/"):
+                target = self.HOST + target
+            if not target.lower().startswith("http"):
+                return [404, "text/plain", b"Not Found", {}]
+            if not vid:
+                m = re.search(r"/(?:api/)?hls/([A-Za-z0-9_-]+)", target)
+                if m:
+                    vid = m.group(1)
+            referer = self.HOST + "/"
+            if "/v/" in target:
+                referer = target
+            headers = {"User-Agent": self.headers["User-Agent"], "Referer": referer}
+            raw = self._get_bytes(target, headers=headers)
+            if not raw:
+                return [404, "text/plain", b"Not Found", {}]
+            m3u8 = self._png_extract_m3u8(raw)
+            if "#EXTM3U" not in m3u8:
+                text = raw.decode("utf-8", "ignore")
+                if "#EXTM3U" in text:
+                    m3u8 = text
+            if "#EXTM3U" in m3u8:
+                lines = []
+                for line in m3u8.splitlines():
+                    s2 = line.strip()
+                    if not s2:
+                        lines.append(line)
+                        continue
+                    if s2.startswith("#"):
+                        if "URI=" in s2 and "#EXT-X-KEY" in s2:
+                            km = re.search(r'URI="([^"]+)"', s2)
+                            if km:
+                                s2 = s2.replace(km.group(1), self._proxy_url(vid, _up.urljoin(target, km.group(1))))
+                        lines.append(s2)
+                        continue
+                    lines.append(self._proxy_url(vid, _up.urljoin(target, s2)))
+                body = "\n".join(lines).encode("utf-8")
+                return [200, "application/vnd.apple.mpegurl", body, {"Access-Control-Allow-Origin": "*"}]
+            ts = self._png_extract_mp4(raw)
+            if ts:
+                return [200, "video/mp2t", ts, {"Access-Control-Allow-Origin": "*"}]
+            if raw[:1] == b"\x47":
+                return [200, "video/mp2t", raw, {"Access-Control-Allow-Origin": "*"}]
+            return [200, "application/octet-stream", raw, {"Access-Control-Allow-Origin": "*"}]
         except Exception:
             pass
         return [404, "text/plain", b"Not Found", {}]
