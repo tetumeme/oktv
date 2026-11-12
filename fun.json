@@ -38,45 +38,10 @@
    "ext": ""
   },
   {
-   "key": "py_huangdou",
-   "name": "黄豆短剧[py]",
-   "type": 3,
-   "api": "https://clun.top/js/ss/huangdou.py",
-   "ext": ""
-  },
-  {
-   "key": "py_lsys111",
-   "name": "恋丝影视[py]",
-   "type": 3,
-   "api": "https://clun.top/js/ss/lsys111.py",
-   "ext": ""
-  },
-  {
    "key": "py_rolizxwnoble",
    "name": "AI绅士短剧[py]",
    "type": 3,
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/luolun.py",
-   "ext": ""
-  },
-  {
-   "key": "py_shaofu36",
-   "name": "少妇喝了[py]",
-   "type": 3,
-   "api": "https://clun.top/js/ss/shaofu36.py",
-   "ext": ""
-  },
-  {
-   "key": "py_xx01",
-   "name": "猎奇影视[py]",
-   "type": 3,
-   "api": "https://clun.top/js/ss/xx01.py",
-   "ext": ""
-  },
-  {
-   "key": "py_redtube",
-   "name": "RedTube[py]",
-   "type": 3,
-   "api": "https://clun.top/js/ss/redtube.py",
    "ext": ""
   },
   {
@@ -85,29 +50,6 @@
    "type": 3,
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/youav.py",
    "ext": ""
-  },
-  {
-   "key": "py_owoav",
-   "name": "owoav[py]",
-   "type": 3,
-   "api": "https://clun.top/js/ss/owoav.py",
-   "ext": ""
-  },
-  {
-   "key": "py_91porn",
-   "name": "91porn[py]",
-   "type": 3,
-   "api": "https://clun.top/js/ss/91porn.py",
-   "ext": ""
-  },
-  {
-   "key": "py_xigua",
-   "name": "51吃瓜[py]",
-   "type": 3,
-   "api": "https://clun.top/js/ss/xigua51.py",
-   "ext": {
-    "h265": true
-   }
   },
   {
    "key": "py_51短剧",
@@ -123,14 +65,6 @@
    "filterable": 0,
    "changeable": 0,
    "api": "https://clun.top/js/ss/xp天堂.js"
-  },
-  {
-   "key": "女优色库",
-   "name": "女优色库[py]",
-   "type": 3,
-   "filterable": 0,
-   "changeable": 0,
-   "api": "https://clun.top/js/ss/女优色库.py"
   },
   {
    "key": "Jable",
@@ -313,15 +247,6 @@
    "api": "https://clun.top/js/ss/jable.py"
   },
   {
-   "key": "py_七区",
-   "name": "七区[py]",
-   "type": 3,
-   "api": "https://clun.top/js/ss/district.py",
-   "quickSearch": 1,
-   "searchable": 1,
-   "filterable": 1
-  },
-  {
    "key": "py_javdb",
    "name": "javdb[py]",
    "type": 3,
@@ -340,17 +265,6 @@
    "quickSearch": 1,
    "filterable": 1,
    "api": "https://clun.top/js/ss/18.py",
-   "order_num": 5,
-   "ext": ""
-  },
-  {
-   "key": "py_小黄书",
-   "name": "小黄书[py]",
-   "type": 3,
-   "searchable": 1,
-   "quickSearch": 1,
-   "filterable": 1,
-   "api": "https://clun.top/js/ss/小黄书.py",
    "order_num": 5,
    "ext": ""
   },
