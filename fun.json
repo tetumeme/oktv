@@ -257,12 +257,8 @@
     "userScript": "https://raw.githubusercontent.com/cluntop/tvbox/main/js/missav.user.js",
     "debug": false,
     "webViewSettings": {
-     "blockNetworkImage": true,
+     "blockNetworkImage": false,
      "blockList": [
-      "*.ico",
-      "*.png",
-      "*.css",
-      "*.svg",
       "https://*.cloudflareinsights.com/*",
       "https://*.googletagmanager.com/*",
       "https://*.ktkjmp.com/*",
