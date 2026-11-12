@@ -493,7 +493,7 @@
    "key": "Hanime",
    "name": "Hanime[py]",
    "type": 3,
-   "api": "https://clun.top/py/Hanime.py",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/hanime.py",
    "searchable": 1,
    "recordable": 0,
    "timeout": 60,
