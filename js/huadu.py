@@ -123,6 +123,7 @@ class Spider(BaseSpider):
         self.hosts = list(DEFAULT_HOSTS)
         self.host = self.hosts[0]
         self.sess = None
+        self.diag = []
 
     # ---------------- 基础 ----------------
     def getName(self):
@@ -188,8 +189,9 @@ class Spider(BaseSpider):
                     last = text
                     if r.status_code == 200 and text and len(text) >= min_len:
                         return text
-                except Exception:
-                    pass
+                    self.diag.append("%s|%s|%d" % (self.host, r.status_code, len(text)))
+                except Exception as e:
+                    self.diag.append("%s|%s" % (self.host, type(e).__name__))
                 if absolute:
                     break
                 if i + 1 < attempts:
@@ -266,9 +268,14 @@ class Spider(BaseSpider):
             if any(c["type_id"] == tid for c in classes):
                 continue
             classes.append({"type_id": tid, "type_name": name})
+        cards = self._cards(text)
+        if not cards:
+            tail = "; ".join(self.diag[-6:]) if self.diag else "no-request"
+            cards = [{"vod_id": "diag", "vod_name": "诊断 " + tail,
+                      "vod_pic": "", "vod_remarks": "len=%d" % len(text or "")}]
         return {
             "class": classes,
-            "list": self._cards(text),
+            "list": cards,
             "filters": {c["type_id"]: [{"n": c["type_name"], "v": c["type_id"]}] for c in classes},
         }
 
