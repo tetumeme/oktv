@@ -645,7 +645,9 @@ class Spider(_BaseSpider):
                 continue
         type_name = " • ".join(tags) if tags else "肉视频"
         desc = ""
-        m = re.search(r'<meta[^>]+name="description"[^>]+content="([^"]+)"', html)
+        m = re.search(r'<meta[^>]+property="og:description"[^>]+content="([^"]+)"', html)
+        if not m:
+            m = re.search(r'<meta[^>]+name="description"[^>]+content="([^"]+)"', html)
         if m:
             desc = self._clean(m.group(1))
         main_name = ""
@@ -788,7 +790,8 @@ class Spider(_BaseSpider):
         if "#EXTM3U" not in m3u8:
             return {"parse": 1, "jx": 0, "playUrl": "", "url": "%s/v/%s" % (self.HOST, clean_id), "header": {}}
         proxy_m3u8 = self._proxy_url(clean_id, full)
-        return {"parse": 0, "jx": 0, "playUrl": "", "url": proxy_m3u8, "header": {"User-Agent": self.headers["User-Agent"], "Referer": self.HOST + "/"}, "format": "application/x-mpegURL"}
+        play_url = full if (not proxy_m3u8) or ("127.0.0.1:9978" in proxy_m3u8) else proxy_m3u8
+        return {"parse": 0, "jx": 0, "playUrl": "", "url": play_url, "header": {"User-Agent": self.headers["User-Agent"], "Referer": self.HOST + "/"}, "format": "application/x-mpegURL"}
 
     def localProxy(self, param):
         if isinstance(param, str):
