@@ -188,7 +188,7 @@
   {
    "key": "netflav",
    "name": "netflav[js]",
-   "jar": "https://clun.top/jar/gm.jar",
+   "jar": "https://raw.githubusercontent.com/cluntop/tvbox/main/jar/gm.jar",
    "type": 3,
    "quickSearch": 1,
    "searchable": 1,
@@ -241,7 +241,7 @@
   {
    "key": "123av",
    "name": "123AV[js]",
-   "jar": "https://clun.top/jar/gm.jar",
+   "jar": "https://raw.githubusercontent.com/cluntop/tvbox/main/jar/gm.jar",
    "type": 3,
    "quickSearch": 1,
    "searchable": 1,
@@ -297,7 +297,7 @@
   {
    "key": "MissAV",
    "name": "MissAV[js]",
-   "jar": "https://clun.top/jar/gm.jar",
+   "jar": "https://raw.githubusercontent.com/cluntop/tvbox/main/jar/gm.jar",
    "type": 3,
    "quickSearch": 1,
    "searchable": 1,
@@ -353,7 +353,7 @@
   {
    "key": "supjav",
    "name": "SupJav[js]",
-   "jar": "https://clun.top/jar/gm.jar",
+   "jar": "https://raw.githubusercontent.com/cluntop/tvbox/main/jar/gm.jar",
    "type": 3,
    "quickSearch": 0,
    "searchable": 1,
@@ -424,7 +424,7 @@
   {
    "key": "xojav",
    "name": "xojav[js]",
-   "jar": "https://clun.top/jar/gm.jar",
+   "jar": "https://raw.githubusercontent.com/cluntop/tvbox/main/jar/gm.jar",
    "type": 3,
    "quickSearch": 1,
    "searchable": 1,
