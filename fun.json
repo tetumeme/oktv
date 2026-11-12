@@ -135,7 +135,7 @@
   {
    "key": "Jable",
    "name": "Jable[js]",
-   "jar": "https://clun.top/jar/gm.jar",
+   "jar": "https://raw.githubusercontent.com/cluntop/tvbox/main/jar/gm.jar",
    "type": 3,
    "quickSearch": 1,
    "searchable": 1,
@@ -148,7 +148,7 @@
    },
    "api": "csp_GM",
    "ext": {
-    "userScript": "https://clun.top/js/jable.user.js",
+    "userScript": "https://raw.githubusercontent.com/cluntop/tvbox/main/js/jable.user.js",
     "debug": false,
     "webViewSettings": {
      "blockNetworkImage": true,
