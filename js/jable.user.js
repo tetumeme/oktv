@@ -54,9 +54,12 @@
         }
 
         function pageTitle() {
-            let t = (document.title || "").split("|")[0].split(" - Jable")[0].trim();
+            let t = ($(".video-info h4").first().text() || "").trim();
             if (!t) {
-                t = ($("h1").first().text() || $(".video-info h4").first().text() || "").trim();
+                t = ($("h1").first().text() || "").trim();
+            }
+            if (!t) {
+                t = (document.title || "").split("|")[0].split(" - Jable")[0].trim();
             }
             return t;
         }
@@ -81,9 +84,19 @@
             },
             detailContent: function (ids) {
                 const id = (ids && ids[0]) ? String(ids[0]) : "";
-                const hls = (typeof unsafeWindow !== "undefined" && unsafeWindow.hlsUrl)
-                    ? unsafeWindow.hlsUrl
-                    : (typeof window.hlsUrl !== "undefined" ? window.hlsUrl : "");
+                let hls = "";
+                if (typeof unsafeWindow !== "undefined" && unsafeWindow.hlsUrl) {
+                    hls = unsafeWindow.hlsUrl;
+                }
+                if (!hls && typeof window.hlsUrl !== "undefined" && window.hlsUrl) {
+                    hls = window.hlsUrl;
+                }
+                if (!hls) {
+                    const mm = (document.documentElement.innerHTML || "").match(/https?:\/\/[^"'\s]+\.m3u8[^"'\s]*/);
+                    if (mm) {
+                        hls = mm[0];
+                    }
+                }
                 const pic = $("#player").attr("poster") || $(".video-info img").first().attr("src") || "";
                 return {
                     list: [{
@@ -96,9 +109,6 @@
                         vod_play_url: hls ? ("正片$" + hls) : ""
                     }]
                 };
-            },
-            playerContent: function (flag, id) {
-                return { parse: 0, url: "", header: {} };
             }
         };
     })();
