@@ -12,7 +12,6 @@
    "name": "souav | 采集",
    "type": 1,
    "api": "https://api.souavzy.vip/api.php/provide/vod/",
-   "playUrl": "https://jiexi.souavzyw.top/m3u8/?url=",
    "searchable": 1,
    "quickSearch": 1,
    "filterable": 1
@@ -1664,13 +1663,7 @@
    ]
   }
  ],
- "parses": [
-  {
-   "name": "souav",
-   "type": 1,
-   "url": "https://jiexi.souavzyw.top/m3u8/?url="
-  }
- ],
+ "parses": [],
  "flags": [
   "youku",
   "qq",
