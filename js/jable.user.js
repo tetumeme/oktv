@@ -1,145 +1,245 @@
 // ==UserScript==
 // @name         Jable
 // @namespace    gmspider
-// @version      2026.11.12
-// @description  Jable 自建维护版（适配 2026-11 站点结构）
+// @version      2026.11.13
+// @description  Jable 自建维护版（原生 DOM，不依赖 jQuery）
 // @author       lcs
 // @match        https://jable.tv/*
-// @require      https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js
 // @grant        unsafeWindow
 // ==/UserScript==
 (function () {
-    const GMSpiderArgs = {};
-    if (typeof GmSpiderInject !== 'undefined') {
-        let args = JSON.parse(GmSpiderInject.GetSpiderArgs());
-        GMSpiderArgs.fName = args.shift();
-        GMSpiderArgs.fArgs = args;
-    } else {
-        GMSpiderArgs.fName = "homeContent";
-        GMSpiderArgs.fArgs = [true];
+    const GMSpiderArgs = { fName: "homeContent", fArgs: [true] };
+    try {
+        if (typeof GmSpiderInject !== "undefined") {
+            const args = JSON.parse(GmSpiderInject.GetSpiderArgs());
+            GMSpiderArgs.fName = args.shift();
+            GMSpiderArgs.fArgs = args;
+        }
+    } catch (e) {
     }
-    Object.freeze(GMSpiderArgs);
 
-    function vidOf(href) {
+    function q(sel, root) {
         try {
-            const parts = new URL(href).pathname.split('/').filter(Boolean);
-            return (parts[1] || '').toUpperCase();
+            return (root || document).querySelector(sel);
         } catch (e) {
-            return '';
+            return null;
         }
     }
 
-    const GmSpider = (function () {
-        function listVideos(result) {
-            result.list = result.list || [];
-            result.pagecount = parseInt($(".pagination .page-item:last").text()) || 1;
-            $(".video-img-box").each(function () {
-                const a = $(this).find(".img-box a").attr("href");
-                if (!a) {
-                    return;
-                }
-                const name = $(this).find(".title").text().trim();
-                if (!name) {
-                    return;
-                }
-                const img = $(this).find("img");
-                result.list.push({
-                    vod_id: vidOf(a),
-                    vod_name: name,
-                    vod_pic: img.data("src") || img.attr("src") || "",
-                    vod_remarks: $(this).find(".absolute-bottom-right").text().trim()
-                });
+    function qa(sel, root) {
+        try {
+            return Array.prototype.slice.call((root || document).querySelectorAll(sel));
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function txt(el) {
+        return el ? (el.textContent || "").trim() : "";
+    }
+
+    function isCf() {
+        if (q("#cf-wrapper")) {
+            return true;
+        }
+        return /Just a moment|请稍候|Attention Required|Checking your browser/i.test(document.title || "");
+    }
+
+    function cards() {
+        let boxes = qa(".video-img-box");
+        if (!boxes.length) {
+            boxes = qa("[class*='video-img-box']");
+        }
+        return boxes;
+    }
+
+    function nameOf(box) {
+        let n = txt(q(".title", box));
+        if (!n) {
+            n = txt(q("h6", box));
+        }
+        if (!n) {
+            const img = q("img", box);
+            if (img) {
+                n = (img.getAttribute("alt") || "").trim();
+            }
+        }
+        if (!n) {
+            const a = q("a[href*='/videos/']", box);
+            if (a) {
+                n = (a.getAttribute("title") || "").trim();
+            }
+        }
+        return n;
+    }
+
+    function picOf(box) {
+        const img = q("img", box);
+        if (!img) {
+            return "";
+        }
+        return img.getAttribute("data-src") || img.getAttribute("src") || "";
+    }
+
+    function idOf(href) {
+        const parts = String(href || "").split("/").filter(Boolean);
+        const last = parts.length ? parts[parts.length - 1] : "";
+        return last.toUpperCase();
+    }
+
+    function listVideos(result) {
+        result.list = result.list || [];
+        cards().forEach(function (box) {
+            const a = q("a[href*='/videos/']", box);
+            if (!a) {
+                return;
+            }
+            const id = idOf(a.getAttribute("href"));
+            const name = nameOf(box);
+            if (!id || !name) {
+                return;
+            }
+            result.list.push({
+                vod_id: id,
+                vod_name: name,
+                vod_pic: picOf(box),
+                vod_remarks: ""
             });
-            return result;
-        }
+        });
+        const last = q(".pagination .page-item:last-child");
+        result.pagecount = parseInt(txt(last), 10) || 1;
+        return result;
+    }
 
-        function pageTitle() {
-            let t = ($(".video-info h4").first().text() || "").trim();
-            if (!t) {
-                t = ($("h1").first().text() || "").trim();
-            }
-            if (!t) {
-                t = (document.title || "").split("|")[0].split(" - Jable")[0].trim();
-            }
-            return t;
+    function pageTitle() {
+        let t = txt(q(".video-info h4"));
+        if (!t) {
+            t = txt(q("h1"));
         }
+        if (!t) {
+            t = (document.title || "").split("|")[0].split(" - Jable")[0].trim();
+        }
+        return t;
+    }
 
-        return {
-            homeContent: function (filter) {
-                const r = listVideos({
-                    class: [
-                        { type_id: "latest-updates", type_name: "最近更新" },
-                        { type_id: "hot", type_name: "热门影片" },
-                        { type_id: "categories/chinese-subtitle", type_name: "中文字幕" },
-                        { type_id: "new-release", type_name: "全新上市" }
-                    ],
-                    filters: {}
+    function findHls() {
+        let u = "";
+        try {
+            if (typeof unsafeWindow !== "undefined" && unsafeWindow.hlsUrl) {
+                u = unsafeWindow.hlsUrl;
+            }
+        } catch (e) {
+        }
+        if (!u) {
+            try {
+                if (typeof window !== "undefined" && window.hlsUrl) {
+                    u = window.hlsUrl;
+                }
+            } catch (e) {
+            }
+        }
+        if (!u) {
+            const m = (document.documentElement.innerHTML || "").match(/https?:\/\/[^"'\s]+\.m3u8[^"'\s]*/);
+            if (m) {
+                u = m[0];
+            }
+        }
+        return u;
+    }
+
+    const GmSpider = {
+        homeContent: function () {
+            const r = listVideos({
+                class: [
+                    { type_id: "latest-updates", type_name: "最近更新" },
+                    { type_id: "hot", type_name: "热门影片" },
+                    { type_id: "categories/chinese-subtitle", type_name: "中文字幕" },
+                    { type_id: "new-release", type_name: "全新上市" }
+                ],
+                filters: {},
+                list: []
+            });
+            if (!r.list.length) {
+                r.list.push({
+                    vod_id: "diag",
+                    vod_name: "诊断 cf=" + (isCf() ? "1" : "0")
+                        + " box=" + cards().length
+                        + " p=" + location.pathname
+                        + " t=" + String(document.title || "").slice(0, 24),
+                    vod_pic: ""
                 });
-                if (!r.list.length) {
-                    r.list.push({
-                        vod_id: "diag",
-                        vod_name: "诊断 box=" + document.querySelectorAll(".video-img-box").length
-                            + " t=" + document.querySelectorAll(".title").length
-                            + " jq=" + (typeof $ === "function" ? "y" : "n")
-                            + " p=" + location.pathname,
-                        vod_pic: ""
-                    });
-                }
-                return r;
-            },
-            categoryContent: function (tid, pg, filter, extend) {
-                return listVideos({ list: [], pagecount: 1 });
-            },
-            searchContent: function (key, quick, pg) {
-                return listVideos({ list: [], pagecount: 1 });
-            },
-            detailContent: function (ids) {
-                const id = (ids && ids[0]) ? String(ids[0]) : "";
-                let hls = "";
-                if (typeof unsafeWindow !== "undefined" && unsafeWindow.hlsUrl) {
-                    hls = unsafeWindow.hlsUrl;
-                }
-                if (!hls && typeof window.hlsUrl !== "undefined" && window.hlsUrl) {
-                    hls = window.hlsUrl;
-                }
-                if (!hls) {
-                    const mm = (document.documentElement.innerHTML || "").match(/https?:\/\/[^"'\s]+\.m3u8[^"'\s]*/);
-                    if (mm) {
-                        hls = mm[0];
-                    }
-                }
-                const pic = $("#player").attr("poster") || $(".video-info img").first().attr("src") || "";
-                return {
+            }
+            return r;
+        },
+        categoryContent: function (tid, pg, filter, extend) {
+            return listVideos({ list: [], pagecount: 1 });
+        },
+        searchContent: function (key, quick, pg) {
+            return listVideos({ list: [], pagecount: 1 });
+        },
+        detailContent: function (ids) {
+            const id = (ids && ids[0]) ? String(ids[0]) : "";
+            const hls = findHls();
+            const player = q("#player");
+            const poster = player ? (player.getAttribute("poster") || "") : "";
+            return {
+                list: [{
+                    vod_id: id,
+                    vod_name: pageTitle() || id,
+                    vod_pic: poster,
+                    vod_remarks: "",
+                    vod_content: txt(q(".video-info h4")),
+                    vod_play_from: "Jable",
+                    vod_play_url: hls ? ("正片$" + hls) : ""
+                }]
+            };
+        }
+    };
+
+    function push(result) {
+        try {
+            if (typeof GmSpiderInject !== "undefined") {
+                GmSpiderInject.SetSpiderResult(JSON.stringify(result));
+            }
+        } catch (e) {
+        }
+    }
+
+    function run() {
+        if (run.done) {
+            return;
+        }
+        run.done = true;
+        let result = { list: [] };
+        try {
+            if (isCf()) {
+                result = {
                     list: [{
-                        vod_id: id,
-                        vod_name: pageTitle() || id,
-                        vod_pic: pic,
-                        vod_remarks: "",
-                        vod_content: ($(".video-info h4").first().text() || "").trim(),
-                        vod_play_from: "Jable",
-                        vod_play_url: hls ? ("正片$" + hls) : ""
+                        vod_id: "diag",
+                        vod_name: "诊断 CF挑战 t=" + String(document.title || "").slice(0, 30),
+                        vod_pic: ""
                     }]
                 };
+            } else {
+                const fn = GmSpider[GMSpiderArgs.fName];
+                result = fn ? fn.apply(null, GMSpiderArgs.fArgs) : { list: [] };
             }
-        };
-    })();
+        } catch (e) {
+            result = {
+                list: [{
+                    vod_id: "diag",
+                    vod_name: "诊断 err=" + String(e && e.message ? e.message : e).slice(0, 50),
+                    vod_pic: ""
+                }]
+            };
+        }
+        push(result);
+    }
 
-    $(document).ready(function () {
-        let result = { list: [] };
-        if ($("#cf-wrapper").length > 0) {
-            if (typeof GM_toastLong === "function") {
-                GM_toastLong("源站不可用:" + $("title").text());
-            }
-        } else {
-            try {
-                result = GmSpider[GMSpiderArgs.fName].apply(null, GMSpiderArgs.fArgs);
-            } catch (e) {
-                console.log("spider error", e);
-                result = { list: [] };
-            }
-        }
-        if (typeof GmSpiderInject !== "undefined") {
-            GmSpiderInject.SetSpiderResult(JSON.stringify(result));
-        }
-    });
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", run);
+        setTimeout(run, 2500);
+    } else {
+        run();
+    }
 })();
