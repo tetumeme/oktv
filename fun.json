@@ -134,7 +134,7 @@
   },
   {
    "key": "Jable",
-   "name": "Jable[js]",
+   "name": "Jable[js][待修]",
    "jar": "https://raw.githubusercontent.com/cluntop/tvbox/main/jar/gm.jar",
    "type": 3,
    "quickSearch": 1,
@@ -184,7 +184,7 @@
   },
   {
    "key": "123av",
-   "name": "123AV[js]",
+   "name": "123AV[js][待修]",
    "jar": "https://raw.githubusercontent.com/cluntop/tvbox/main/jar/gm.jar",
    "type": 3,
    "quickSearch": 1,
@@ -240,7 +240,7 @@
   },
   {
    "key": "MissAV",
-   "name": "MissAV[js]",
+   "name": "MissAV[js][待修]",
    "jar": "https://raw.githubusercontent.com/cluntop/tvbox/main/jar/gm.jar",
    "type": 3,
    "quickSearch": 1,
