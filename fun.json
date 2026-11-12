@@ -148,7 +148,7 @@
    },
    "api": "csp_GM",
    "ext": {
-    "userScript": "https://raw.githubusercontent.com/cluntop/tvbox/main/js/jable.user.js",
+    "userScript": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/jable.user.js",
     "debug": false,
     "webViewSettings": {
      "blockNetworkImage": true,
