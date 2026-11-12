@@ -66,7 +66,7 @@
 
         return {
             homeContent: function (filter) {
-                return listVideos({
+                const r = listVideos({
                     class: [
                         { type_id: "latest-updates", type_name: "最近更新" },
                         { type_id: "hot", type_name: "热门影片" },
@@ -75,6 +75,17 @@
                     ],
                     filters: {}
                 });
+                if (!r.list.length) {
+                    r.list.push({
+                        vod_id: "diag",
+                        vod_name: "诊断 box=" + document.querySelectorAll(".video-img-box").length
+                            + " t=" + document.querySelectorAll(".title").length
+                            + " jq=" + (typeof $ === "function" ? "y" : "n")
+                            + " p=" + location.pathname,
+                        vod_pic: ""
+                    });
+                }
+                return r;
             },
             categoryContent: function (tid, pg, filter, extend) {
                 return listVideos({ list: [], pagecount: 1 });
