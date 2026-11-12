@@ -34,7 +34,7 @@
    "key": "py_huangguo2",
    "name": "黄果剧场[py]",
    "type": 3,
-   "api": "https://clun.top/js/ss/黄果剧场.py",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/huangguo.py",
    "ext": ""
   },
   {
