@@ -629,8 +629,9 @@ class Spider(_BaseSpider):
         vod_pic = info.get("pic") or ""
         type_name = info.get("tags") or "肉视频"
         lines = []
-        if info.get("desc") and info.get("desc") != vod_name:
-            lines.append(info["desc"])
+        dsc = info.get("desc") or ""
+        if dsc and dsc != vod_name and len(dsc) > len(vod_name) + 6:
+            lines.append(dsc)
         if info.get("vid"):
             lines.append("【番号】%s" % info["vid"])
         if info.get("duration"):
@@ -680,6 +681,7 @@ class Spider(_BaseSpider):
         out = {}
         if not html:
             return out
+        html = re.sub(r"<!--.*?-->", "", html, flags=re.S)
         m = re.search(r"<h1[^>]*>(.*?)</h1>", html, re.S)
         if m:
             out["name"] = self._clean(m.group(1))
