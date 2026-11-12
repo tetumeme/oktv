@@ -83,7 +83,7 @@
    "key": "py_Youavhub",
    "name": "Youavhub[py]",
    "type": 3,
-   "api": "https://clun.top/js/ss/youav.py",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/youav.py",
    "ext": ""
   },
   {
