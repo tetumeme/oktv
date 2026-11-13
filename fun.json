@@ -238,7 +238,7 @@
   },
   {
    "key": "XMVideo",
-   "name": "熊猫视频",
+   "name": "熊猫视频[jar]",
    "type": 3,
    "api": "csp_XMVideo",
    "searchable": 1,
@@ -247,7 +247,7 @@
   },
   {
    "key": "Zuise",
-   "name": "最色",
+   "name": "最色[jar]",
    "type": 3,
    "api": "csp_Zuise",
    "quickSearch": 1,
@@ -384,7 +384,7 @@
   },
   {
    "key": "csp_JavBus",
-   "name": "JavBus",
+   "name": "JavBus[jar]",
    "type": 3,
    "api": "csp_JavBus",
    "searchable": 1,
@@ -395,7 +395,7 @@
   },
   {
    "key": "csp_JavDb",
-   "name": "JavDb",
+   "name": "JavDb[jar]",
    "type": 3,
    "api": "csp_JavDb",
    "searchable": 1,
@@ -406,7 +406,7 @@
   },
   {
    "key": "csp_Netflav",
-   "name": "Netflav",
+   "name": "Netflav[jar]",
    "type": 3,
    "api": "csp_Netflav",
    "jar": "https://clun.top/jar/netflav.jar",
