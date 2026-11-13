@@ -692,6 +692,15 @@ class Spider(_BaseSpider):
             m = re.search(r'coverImageUrl:"([^"]+)"', html)
             if m:
                 out["pic"] = m.group(1)
+        m = re.search(r">影片簡介</summary>\s*<p[^>]*>([\s\S]{0,800}?)</p>", html)
+        if m:
+            out["desc"] = self._clean(m.group(1))
+        m = re.search(r'<div class="hidden">([^<]{1,300})</div>', html)
+        if m:
+            out["tags"] = self._clean(m.group(1))
+        m = re.search(r'property="og:image" content="([^"]+)"', html)
+        if m:
+            out["pic"] = m.group(1)
         page_tags = []
         for m in re.finditer(r'href="(/t/[^"]+)"[^>]*>([^<]{1,30})<', html):
             nm = self._clean(m.group(2))
