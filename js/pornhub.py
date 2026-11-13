@@ -116,7 +116,11 @@ class Spider(BaseSpider):
             name = self._clean(alt.group(1)) if alt else ""
             if not name:
                 continue
-            poster = re.search(r'data-poster="([^"]+)"', seg)
+            poster = re.search(r'<img[^>]+src="(https://[^"]*phncdn[^"]*)"', seg)
+            if not poster:
+                poster = re.search(r'data-poster="([^"]+)"', seg)
+            if not poster:
+                poster = re.search(r'data-src="(https://[^"]+)"', seg)
             seen.add(vk)
             out.append({
                 "vod_id": vk,
