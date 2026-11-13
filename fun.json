@@ -190,7 +190,7 @@
    "key": "sukebei",
    "name": "Sukebei[py]",
    "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/sukebei.py",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/sukebei.py?v=2",
    "ext": "proxy",
    "searchable": 1,
    "quickSearch": 1,
