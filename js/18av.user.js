@@ -230,6 +230,18 @@
         var radix = pickNum(h, "hcdeedg252", 3);
         var xorK = pickNum(h, "hadeedg252", 14);
         if (radix > 25) radix = radix % 25;
+        var kw = "";
+        var mk = h.match(/<meta name="keywords" content="([^"]{5,500})"/);
+        if (mk) {
+            var arr = mk[1].split(",");
+            arr.shift();
+            var tags = [];
+            for (var ti = 0; ti < arr.length; ti++) {
+                var s2 = clean(arr[ti]);
+                if (s2 && tags.indexOf(s2) < 0) tags.push(s2);
+            }
+            kw = tags.join(" · ");
+        }
         var list = [], seenUrl = {};
         var re = /\[\[\s*'(a_iframe_id_[^']*)'\s*,\s*'([^']+)'[\s\S]{0,500}?'([^']*play\.php\?numresolution=(\d+)&id=)'/g, m;
         while ((m = re.exec(h)) !== null) {
@@ -259,7 +271,7 @@
             vod_name: title || vid,
             vod_pic: "",
             vod_remarks: list.length ? (list.length + " 条线路") : "无线路",
-            vod_content: "",
+            vod_content: kw ? ("标签 · " + kw) : "",
             vod_play_from: "18AV",
             vod_play_url: play
         };
