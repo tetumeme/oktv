@@ -166,10 +166,21 @@ class Spider(BaseSpider):
                 tag = "标清"
             play_parts.append("%s$%s" % (tag, s_url))
         play_parts.sort(key=lambda x: 0 if "1080" in x else (1 if "720" in x else 2))
+        content = ""
+        m = re.search(r'<meta property="og:description" content="(.*?)"', html)
+        if m:
+            content = html_parser.unescape(m.group(1)).strip()
+        if (not content) or content == title:
+            m = re.search(r'<meta name="description" content="(.*?)"', html)
+            if m:
+                content = html_parser.unescape(m.group(1)).strip()
+        if content == title:
+            content = ""
         return {'list': [{
             "vod_id": vid,
             "vod_name": title,
             "vod_pic": pic,
+            "vod_content": content,
             "vod_play_from": "Hanime",
             "vod_play_url": "#".join(play_parts)
         }]}
