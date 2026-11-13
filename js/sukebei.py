@@ -131,8 +131,16 @@ class Spider(BaseSpider):
                  "vod_pic": "", "vod_remarks": r["vod_remarks"]} for r in rows]
 
     def homeContent(self, filter=None):
-        rows = self._rows(self._get("/"))
-        return {"class": list(CATS), "filters": {}, "list": self._item(rows)}
+        h = self._get("/")
+        cards = self._item(self._rows(h))
+        if not cards:
+            cards = [{
+                "vod_id": "diag",
+                "vod_name": "诊断 首页无行",
+                "vod_pic": "",
+                "vod_remarks": "h=%d" % len(h),
+            }]
+        return {"class": list(CATS), "filters": {}, "list": cards}
 
     def homeVideoContent(self):
         return {"list": self._item(self._rows(self._get("/")))}
@@ -140,12 +148,20 @@ class Spider(BaseSpider):
     def categoryContent(self, tid, pg=1, filter=None, extend=None):
         page = int(pg) if str(pg).isdigit() else 1
         t = str(tid or "all")
-        path = "/" if t == "all" else "/?c=" + t
+        path = "/" if t in ("all", "") else "/?c=" + t
         if page > 1:
             path += ("&" if "?" in path else "?") + "p=%d" % page
-        rows = self._rows(self._get(path))
-        return {"list": self._item(rows), "page": page, "pagecount": 999,
-                "limit": len(rows), "total": len(rows)}
+        h = self._get(path)
+        cards = self._item(self._rows(h))
+        if not cards:
+            cards = [{
+                "vod_id": "diag",
+                "vod_name": "诊断 tid=" + t,
+                "vod_pic": "",
+                "vod_remarks": "h=%d" % len(h),
+            }]
+        return {"list": cards, "page": page, "pagecount": 999,
+                "limit": len(cards), "total": len(cards)}
 
     def searchContent(self, key, quick=False, pg="1"):
         from urllib.parse import quote
