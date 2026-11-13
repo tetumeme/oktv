@@ -201,13 +201,15 @@ class Spider(BaseSpider):
         return self._xml(query)
 
     def homeContent(self, filter=None):
-        j = self._data("ac=detail&pg=1")
+        base = self._data("ac=list&pg=1")
+        j = self._data("ac=detail&pg=1&pagesize=20")
         if not j.get("list"):
             j = self._data("ac=list&pg=1")
-        return {"class": self._classes(j), "filters": {}, "list": self._items(j.get("list"))}
+        cls = self._classes(base) or self._classes(j)
+        return {"class": cls, "filters": {}, "list": self._items(j.get("list"))}
 
     def homeVideoContent(self):
-        j = self._data("ac=detail&pg=1")
+        j = self._data("ac=detail&pg=1&pagesize=20")
         if not j.get("list"):
             j = self._data("ac=list&pg=1")
         return {"list": self._items(j.get("list"))}
@@ -215,9 +217,9 @@ class Spider(BaseSpider):
     def categoryContent(self, tid, pg=1, filter=None, extend=None):
         page = int(pg) if str(pg).isdigit() else 1
         t = str(tid or "")
-        j = self._data("ac=detail&t=%s&pg=%d" % (t, page))
+        j = self._data("ac=detail&t=%s&pg=%d&pagesize=20" % (t, page))
         if not j.get("list"):
-            j = self._data("ac=list&t=%s&pg=%d" % (t, page))
+            j = self._data("ac=list&t=%s&pg=%d&pagesize=20" % (t, page))
         pc = j.get("pagecount")
         total = j.get("total")
         cards = self._items(j.get("list"))
@@ -234,9 +236,9 @@ class Spider(BaseSpider):
         if not kw:
             return {"list": []}
         page = int(pg) if str(pg).isdigit() else 1
-        j = self._data("ac=detail&wd=%s&pg=%d" % (quote(kw), page))
+        j = self._data("ac=detail&wd=%s&pg=%d&pagesize=20" % (quote(kw), page))
         if not j.get("list"):
-            j = self._data("ac=list&wd=%s&pg=%d" % (quote(kw), page))
+            j = self._data("ac=list&wd=%s&pg=%d&pagesize=20" % (quote(kw), page))
         return {"list": self._items(j.get("list")), "page": page,
                 "pagecount": 999, "limit": 20, "total": 0}
 
