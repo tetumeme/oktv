@@ -62,7 +62,7 @@
    "key": "xp天堂",
    "name": "XP天堂[py]",
    "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/xptt.py",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/xptt.py?v=2",
    "ext": "proxy",
    "searchable": 1,
    "quickSearch": 1,
