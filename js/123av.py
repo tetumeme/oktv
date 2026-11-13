@@ -187,15 +187,26 @@ class Spider(BaseSpider):
         if m:
             pic = m.group(1)
         stream = ""
-        for code in re.findall(r"sadie-shop\.site/e/([A-Za-z0-9_]+)", h):
-            stream = self._stream(code)
+        resp = ""
+        codes = re.findall(r"sadie-shop\.site/e/([A-Za-z0-9_]+)", h)
+        for code in codes:
+            resp = self._fetch(EMBED + "/stream?id=" + code,
+                               referer=EMBED + "/e/" + code, origin=EMBED)
+            try:
+                j = json.loads(resp)
+                stream = str((j.get("media") or {}).get("stream") or "")
+            except Exception:
+                stream = ""
             if stream:
                 break
+        diag = "h=%d code=%d" % (len(h), len(codes))
+        if not stream:
+            diag = diag + " resp=" + self._clean(resp)[:90]
         return {"list": [{
             "vod_id": vid,
             "vod_name": title or vid,
             "vod_pic": pic,
-            "vod_remarks": "" if stream else "无线路",
+            "vod_remarks": "" if stream else diag,
             "vod_content": "",
             "vod_play_from": "123AV",
             "vod_play_url": ("正片$" + stream) if stream else "",
