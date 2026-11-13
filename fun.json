@@ -10,16 +10,6 @@
    "quickSearch": 1
   },
   {
-   "key": "souav",
-   "name": "souav | 采集",
-   "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/caiji.py",
-   "searchable": 1,
-   "quickSearch": 1,
-   "filterable": 1,
-   "ext": "https://api.souavzy.vip/api.php/provide/vod/"
-  },
-  {
    "key": "py_porn",
    "name": "肉视频[py]",
    "type": 3,
