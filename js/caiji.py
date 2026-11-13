@@ -223,12 +223,14 @@ class Spider(BaseSpider):
         pc = j.get("pagecount")
         total = j.get("total")
         cards = self._items(j.get("list"))
+        pcv = int(pc) if str(pc).isdigit() and int(pc) > 1 else 999
+        tv = int(total) if str(total).isdigit() and int(total) > 0 else 999999
         return {
             "list": cards,
             "page": page,
-            "pagecount": int(pc) if str(pc).isdigit() else 999,
+            "pagecount": pcv,
             "limit": len(cards),
-            "total": int(total) if str(total).isdigit() else 0,
+            "total": tv,
         }
 
     def searchContent(self, key, quick=False, pg="1"):
