@@ -24,6 +24,20 @@
    "ext": ""
   },
   {
+   "key": "py_huangguo2",
+   "name": "黄果剧场[py][需大陆IP]",
+   "type": 3,
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/huangguo.py",
+   "ext": ""
+  },
+  {
+   "key": "py_huangguo2",
+   "name": "黄果剧场[py]",
+   "type": 3,
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/huangguo.py",
+   "ext": ""
+  },
+  {
    "key": "py_rolizxwnoble",
    "name": "AI绅士短剧[py]",
    "type": 3,
