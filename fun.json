@@ -375,16 +375,46 @@
   },
   {
    "key": "18AV",
-   "name": "18AV",
+   "name": "18AV[js]",
+   "jar": "https://raw.githubusercontent.com/cluntop/tvbox/main/jar/gm.jar",
    "type": 3,
-   "api": "csp_Eighteen",
+   "quickSearch": 1,
    "searchable": 1,
-   "recordable": 0,
+   "changeable": 0,
+   "filterable": 1,
    "timeout": 60,
-   "ext": "proxy",
    "style": {
     "type": "rect",
     "ratio": 1.485
+   },
+   "api": "csp_GM",
+   "ext": {
+    "userScript": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/18av.user.js",
+    "debug": false,
+    "webViewSettings": {
+     "blockNetworkImage": false,
+     "blockList": [
+      "https://*.magsrv.com/*",
+      "https://*.ddaa4.com/*",
+      "https://*.tsyndicate.com/*",
+      "https://*.juicyads.com/*",
+      "https://*.exoclick.com/*"
+     ]
+    },
+    "spider": {
+     "homeContent": {
+      "loadUrl": "https://18av.mm-cg.com/zh/"
+     },
+     "categoryContent": {
+      "loadUrl": "https://18av.mm-cg.com/zh/${tid}_list/all/${pg:-1}.html"
+     },
+     "detailContent": {
+      "loadUrl": "https://18av.mm-cg.com/zh/"
+     },
+     "searchContent": {
+      "loadUrl": "https://18av.mm-cg.com/zh/"
+     }
+    }
    }
   },
   {
