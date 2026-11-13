@@ -13,6 +13,7 @@ import html as html_lib
 import json
 import re
 import ssl
+import xml.etree.ElementTree as ET
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
@@ -133,24 +134,90 @@ class Spider(BaseSpider):
             out.append({"type_id": tid, "type_name": str(c.get("type_name") or tid)})
         return out
 
+    def _xml_item(self, v):
+        def g(tag):
+            return (v.findtext(tag) or "").strip()
+        vid = g("id")
+        if not vid:
+            return None
+        froms = []
+        urls = []
+        for dd in v.findall("dl/dd"):
+            flag = dd.get("flag") or "xml"
+            txt = (dd.text or "").strip()
+            if not txt:
+                continue
+            froms.append(flag)
+            urls.append(txt)
+        return {
+            "vod_id": vid,
+            "vod_name": g("name") or vid,
+            "vod_pic": g("pic"),
+            "vod_remarks": g("note"),
+            "vod_content": g("des"),
+            "vod_play_from": "$$".join(froms),
+            "vod_play_url": "$$".join(urls),
+        }
+
+    def _xml(self, query):
+        if not self.api:
+            return {}
+        sep = "&" if "?" in self.api else "?"
+        txt = self._get(self.api + sep + query)
+        i = txt.find("<rss")
+        if i < 0:
+            return {}
+        try:
+            root = ET.fromstring(txt[i:])
+        except Exception:
+            return {}
+        out = {"class": [], "list": []}
+        clas = root.find("class")
+        if clas is not None:
+            for ty in clas.findall("ty"):
+                tid = ty.get("id") or ""
+                if tid:
+                    out["class"].append({"type_id": tid, "type_name": (ty.text or tid).strip()})
+        lst = root.find("list")
+        if lst is not None:
+            pc = lst.get("pagecount") or ""
+            rc = lst.get("recordcount") or ""
+            if pc.isdigit():
+                out["pagecount"] = pc
+            if rc.isdigit():
+                out["total"] = rc
+            for node in lst.findall("video"):
+                item = self._xml_item(node)
+                if item:
+                    out["list"].append(item)
+        return out
+
+    def _data(self, query):
+        j = self._api(query)
+        if isinstance(j, dict) and isinstance(j.get("list"), list) and j.get("list"):
+            return j
+        if isinstance(j, dict) and isinstance(j.get("class"), list) and j.get("class"):
+            return j
+        return self._xml(query)
+
     def homeContent(self, filter=None):
-        j = self._api("ac=detail&pg=1")
+        j = self._data("ac=detail&pg=1")
         if not j.get("list"):
-            j = self._api("ac=list&pg=1")
+            j = self._data("ac=list&pg=1")
         return {"class": self._classes(j), "filters": {}, "list": self._items(j.get("list"))}
 
     def homeVideoContent(self):
-        j = self._api("ac=detail&pg=1")
+        j = self._data("ac=detail&pg=1")
         if not j.get("list"):
-            j = self._api("ac=list&pg=1")
+            j = self._data("ac=list&pg=1")
         return {"list": self._items(j.get("list"))}
 
     def categoryContent(self, tid, pg=1, filter=None, extend=None):
         page = int(pg) if str(pg).isdigit() else 1
         t = str(tid or "")
-        j = self._api("ac=detail&t=%s&pg=%d" % (t, page))
+        j = self._data("ac=detail&t=%s&pg=%d" % (t, page))
         if not j.get("list"):
-            j = self._api("ac=list&t=%s&pg=%d" % (t, page))
+            j = self._data("ac=list&t=%s&pg=%d" % (t, page))
         pc = j.get("pagecount")
         total = j.get("total")
         cards = self._items(j.get("list"))
@@ -167,9 +234,9 @@ class Spider(BaseSpider):
         if not kw:
             return {"list": []}
         page = int(pg) if str(pg).isdigit() else 1
-        j = self._api("ac=detail&wd=%s&pg=%d" % (quote(kw), page))
+        j = self._data("ac=detail&wd=%s&pg=%d" % (quote(kw), page))
         if not j.get("list"):
-            j = self._api("ac=list&wd=%s&pg=%d" % (quote(kw), page))
+            j = self._data("ac=list&wd=%s&pg=%d" % (quote(kw), page))
         return {"list": self._items(j.get("list")), "page": page,
                 "pagecount": 999, "limit": 20, "total": 0}
 
@@ -177,7 +244,7 @@ class Spider(BaseSpider):
         vid = str(ids[0]) if ids else ""
         if not vid:
             return {"list": []}
-        j = self._api("ac=detail&ids=%s" % quote(vid))
+        j = self._data("ac=detail&ids=%s" % quote(vid))
         arr = j.get("list") or []
         if not arr:
             return {"list": []}
