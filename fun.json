@@ -250,6 +250,17 @@
    "ext": "proxy"
   },
   {
+   "key": "stripchat",
+   "name": "Stripchat直播",
+   "type": 3,
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/stripchat.py",
+   "ext": "proxy",
+   "style": {
+    "type": "rect",
+    "ratio": 1.34
+   }
+  },
+  {
    "key": "麻豆视频",
    "name": "麻豆 | 采集",
    "type": 3,
