@@ -188,7 +188,8 @@ class Spider(BaseSpider):
             pic = m.group(1)
         stream = ""
         resp = ""
-        codes = re.findall(r"sadie-shop\.site/e/([A-Za-z0-9_]+)", h)
+        h2 = h.replace("\\/", "/")
+        codes = re.findall(r"sadie-shop\.site/e/([A-Za-z0-9_]+)", h2)
         for code in codes:
             resp = self._fetch(EMBED + "/stream?id=" + code,
                                referer=EMBED + "/e/" + code, origin=EMBED)
