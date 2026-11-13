@@ -202,14 +202,14 @@ class Spider(BaseSpider):
 
     def homeContent(self, filter=None):
         base = self._data("ac=list&pg=1")
-        j = self._data("ac=detail&pg=1&pagesize=20")
+        j = self._data("ac=detail&pg=1&pagesize=40")
         if not j.get("list"):
             j = self._data("ac=list&pg=1")
         cls = self._classes(base) or self._classes(j)
         return {"class": cls, "filters": {}, "list": self._items(j.get("list"))}
 
     def homeVideoContent(self):
-        j = self._data("ac=detail&pg=1&pagesize=20")
+        j = self._data("ac=detail&pg=1&pagesize=40")
         if not j.get("list"):
             j = self._data("ac=list&pg=1")
         return {"list": self._items(j.get("list"))}
