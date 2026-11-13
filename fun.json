@@ -59,19 +59,6 @@
    "ext": ""
   },
   {
-   "key": "xp天堂",
-   "name": "XP天堂[py]",
-   "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/xptt.py?v=5",
-   "ext": "proxy",
-   "searchable": 1,
-   "quickSearch": 1,
-   "style": {
-    "type": "rect",
-    "ratio": 1.485
-   }
-  },
-  {
    "key": "Jable",
    "name": "Jable[js][待修]",
    "jar": "https://raw.githubusercontent.com/cluntop/tvbox/main/jar/gm.jar",
