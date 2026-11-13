@@ -60,11 +60,16 @@
   },
   {
    "key": "xp天堂",
-   "name": "XP天堂[js]",
+   "name": "XP天堂[py]",
    "type": 3,
-   "filterable": 0,
-   "changeable": 0,
-   "api": "https://clun.top/js/ss/xp天堂.js"
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/xptt.py",
+   "ext": "proxy",
+   "searchable": 1,
+   "quickSearch": 1,
+   "style": {
+    "type": "rect",
+    "ratio": 1.485
+   }
   },
   {
    "key": "Jable",
