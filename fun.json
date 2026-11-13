@@ -228,17 +228,6 @@
    "ext": "proxy"
   },
   {
-   "key": "xhm",
-   "name": "xhm",
-   "type": 3,
-   "api": "https://raw.githubusercontent.com/cluntop/tvbox/main/py/Xhm.py",
-   "searchable": 1,
-   "quickSearch": 1,
-   "filterable": 0,
-   "changeable": 0,
-   "ext": "proxy"
-  },
-  {
    "key": "pornhub",
    "name": "Pornhub[py]",
    "type": 3,
@@ -248,17 +237,6 @@
    "filterable": 0,
    "changeable": 0,
    "ext": "proxy"
-  },
-  {
-   "key": "stripchat",
-   "name": "Stripchat直播",
-   "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/stripchat.py",
-   "ext": "proxy",
-   "style": {
-    "type": "rect",
-    "ratio": 1.34
-   }
   },
   {
    "key": "麻豆视频",
