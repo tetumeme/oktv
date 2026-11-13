@@ -239,22 +239,6 @@
    "ext": "proxy"
   },
   {
-   "key": "csp_pornhub",
-   "name": "Pornhub",
-   "type": 3,
-   "api": "csp_XYQHiker",
-   "jar": "https://clun.top/jar/XYQ.jar",
-   "searchable": 1,
-   "quickSearch": 1,
-   "filterable": 0,
-   "ext": "https://clun.top/json/pornhub.json",
-   "style": {
-    "type": "rect",
-    "ratio": 1.6,
-    "proxy": "proxy"
-   }
-  },
-  {
    "key": "pornhub",
    "name": "py_Phb",
    "type": 3,
