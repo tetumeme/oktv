@@ -120,7 +120,7 @@
    "key": "123av",
    "name": "123AV[py]",
    "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/123av.py?v=2",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/b732a2eb8ac333c207c7dd8a6ed2c988c1db9853/js/123av.py",
    "ext": "proxy",
    "searchable": 1,
    "quickSearch": 1,
