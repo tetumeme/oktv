@@ -152,9 +152,11 @@ class Spider(BaseSpider):
             meta.append(str(it.get("vod_year")))
         if it.get("vod_area"):
             meta.append(str(it.get("vod_area")))
+        if it.get("vod_actor"):
+            meta.append(str(it.get("vod_actor")))
         if it.get("vod_remarks"):
             meta.append(str(it.get("vod_remarks")))
-        if meta:
+        if meta and (content or len(meta) >= 2):
             lines.append(" · ".join(meta))
         return {"list": [{
             "vod_id": vid,
