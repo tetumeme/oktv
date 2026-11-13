@@ -251,7 +251,26 @@ class Spider(BaseSpider):
         if not arr:
             return {"list": []}
         v = arr[0]
-        content = v.get("vod_content") or v.get("vod_blurb") or ""
+        name = str(v.get("vod_name") or vid)
+        content = self._clean(v.get("vod_content") or v.get("vod_blurb") or "")
+        # 采集站常把标题原样塞进 vod_content，与标题雷同时不重复显示
+        if content:
+            a = re.sub(r"\W", "", content)
+            b = re.sub(r"\W", "", name)
+            if a and (a == b or b.startswith(a) or a.startswith(b)):
+                content = ""
+        meta = []
+        if v.get("vod_year"):
+            meta.append(str(v.get("vod_year")))
+        if v.get("vod_area"):
+            meta.append(str(v.get("vod_area")))
+        if v.get("vod_actor"):
+            meta.append(str(v.get("vod_actor")))
+        if v.get("vod_remarks"):
+            meta.append(str(v.get("vod_remarks")))
+        body = content
+        if meta:
+            body = (content + "\n" if content else "") + " · ".join(meta)
         return {"list": [{
             "vod_id": vid,
             "vod_name": str(v.get("vod_name") or vid),
@@ -261,7 +280,7 @@ class Spider(BaseSpider):
             "vod_area": str(v.get("vod_area") or ""),
             "vod_actor": str(v.get("vod_actor") or ""),
             "vod_director": str(v.get("vod_director") or ""),
-            "vod_content": self._clean(content),
+            "vod_content": body,
             "vod_play_from": str(v.get("vod_play_from") or ""),
             "vod_play_url": str(v.get("vod_play_url") or ""),
         }]}
