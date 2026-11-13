@@ -632,26 +632,24 @@ class Spider(_BaseSpider):
         dsc = info.get("desc") or ""
         if dsc and dsc != vod_name and len(dsc) > len(vod_name) + 6:
             lines.append(dsc)
+        meta = []
         if info.get("vid"):
-            lines.append("【番号】%s" % info["vid"])
+            meta.append(str(info["vid"]))
         if info.get("duration"):
-            lines.append("【时长】%s" % info["duration"])
+            meta.append(str(info["duration"]))
         if info.get("tags"):
-            lines.append("【标签】%s" % info["tags"])
-        hot = []
+            meta.append(str(info["tags"]))
         if info.get("views"):
-            hot.append("%s 次观看" % info["views"])
-        if info.get("likes"):
-            hot.append("赞 %s" % info["likes"])
-        if hot:
-            lines.append("【热度】%s" % " · ".join(hot))
+            meta.append("%s 次观看" % info["views"])
         if info.get("series"):
             if info.get("ep_label"):
-                lines.append("【系列】%s（%s）" % (info["series"], info["ep_label"]))
+                meta.append("%s（%s）" % (info["series"], info["ep_label"]))
             else:
-                lines.append("【系列】%s" % info["series"])
+                meta.append(str(info["series"]))
+        if meta:
+            lines.append(" · ".join(meta))
         if info.get("ref"):
-            lines.append("【来源】%s" % info["ref"])
+            lines.append("来源：%s" % info["ref"])
         vod_content = "\n".join(lines)
         eps = info.get("eps") or []
         if len(eps) > 1:
