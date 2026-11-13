@@ -196,13 +196,13 @@ class Spider(BaseSpider):
             play = self._abs(m.group(1).replace("\\/", "/"))
         diag = ""
         if not play:
-            diag = "未取到播放地址｜h=%d｜含m3u8=%s｜头=%s" % (
-                len(h), ("m3u8" in h), self._clean(h[:100]))
+            diag = "h=%d m3u8=%s url=/videos/%s/ head=%s" % (
+                len(h), ("m3u8" in h), vid, self._clean(h[:60]))
         return {"list": [{
             "vod_id": vid,
             "vod_name": title or vid,
             "vod_pic": "",
-            "vod_remarks": "" if play else "无线路",
+            "vod_remarks": "" if play else diag,
             "vod_content": diag,
             "vod_play_from": "XP天堂",
             "vod_play_url": ("正片$" + self._proxy(play)) if play else "",
