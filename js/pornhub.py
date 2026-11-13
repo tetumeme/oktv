@@ -144,7 +144,7 @@ class Spider(BaseSpider):
         path = "/%s%spage=%d" % (t, sep, page)
         cards = self._cards(self._get(path))
         return {"list": cards, "page": page, "pagecount": 999,
-                "limit": len(cards), "total": len(cards)}
+                "limit": len(cards), "total": 999999}
 
     def searchContent(self, key, quick=False, pg="1"):
         kw = str(key or "").strip()
@@ -154,7 +154,7 @@ class Spider(BaseSpider):
         path = "/video/search?search=%s&page=%d" % (quote(kw), page)
         cards = self._cards(self._get(path))
         return {"list": cards, "page": page, "pagecount": 999,
-                "limit": len(cards), "total": len(cards)}
+                "limit": len(cards), "total": 999999}
 
     def detailContent(self, ids):
         vk = str(ids[0]) if ids else ""
