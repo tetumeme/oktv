@@ -133,13 +133,37 @@
         return decodeURIComponent(escape(String.fromCharCode.apply(null, out)));
     }
 
-    function unwrap(cipher) {
-        var parts = String(cipher).split("d");
+    function pickStr(src, name, dflt) {
+        var i = src.indexOf("var " + name + " = '");
+        if (i < 0) return dflt;
+        var j = i + ("var " + name + " = '").length;
+        var k = src.indexOf("'", j);
+        if (k < 0) return dflt;
+        var v = src.slice(j, k);
+        return v.length === 16 ? v : dflt;
+    }
+
+    function pickNum(src, name, dflt) {
+        var i = src.indexOf(name + "=");
+        if (i < 0) return dflt;
+        var j = i + name.length + 1;
+        var s = "";
+        while (j < src.length && s.length < 4 && "0123456789".indexOf(src.charAt(j)) >= 0) {
+            s += src.charAt(j);
+            j++;
+        }
+        var n = parseInt(s, 10);
+        return isNaN(n) ? dflt : n;
+    }
+
+    function unwrap(cipher, key, iv, radix, xorK) {
+        var sep = String.fromCharCode(radix + 97);
+        var parts = String(cipher).split(sep);
         var b64 = "";
         for (var i = 0; i < parts.length; i++) {
-            b64 += String.fromCharCode((parseInt(parts[i], 3) ^ 14));
+            b64 += String.fromCharCode((parseInt(parts[i], radix) ^ xorK) & 0xff);
         }
-        return aesDecrypt(b64, "06e7747100b4def0", "fa57fbf150ffdf94");
+        return aesDecrypt(b64, key, iv);
     }
 
     function xhr(path) {
@@ -201,6 +225,11 @@
         if (tm) {
             title = clean(tm[1]).replace(/18AV.*$/, "").trim();
         }
+        var key = pickStr(h, "argdeqweqweqwe", "06e7747100b4def0");
+        var iv = pickStr(h, "hdddedg252", "fa57fbf150ffdf94");
+        var radix = pickNum(h, "hcdeedg252", 3);
+        var xorK = pickNum(h, "hadeedg252", 14);
+        if (radix > 25) radix = radix % 25;
         var list = [], seenUrl = {};
         var re = /\[\[\s*'(a_iframe_id_[^']*)'\s*,\s*'([^']+)'[\s\S]{0,500}?'([^']*play\.php\?numresolution=(\d+)&id=)'/g, m;
         while ((m = re.exec(h)) !== null) {
@@ -208,7 +237,7 @@
             var prefix = m[3];
             if (prefix.indexOf("//") === 0) prefix = "https:" + prefix;
             var pid = "";
-            try { pid = unwrap(m[2]); } catch (e) { pid = ""; }
+            try { pid = unwrap(m[2], key, iv, radix, xorK); } catch (e) { pid = ""; }
             if (!pid) continue;
             var ph = xhr(prefix + pid);
             var sm = ph.match(/src:\s*'([^']+\.m3u8[^']*)'/g) || [];
