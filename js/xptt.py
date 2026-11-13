@@ -117,11 +117,11 @@ class Spider(BaseSpider):
                 continue
             seen.add(vid)
             am = re.search(r'alt="([^"]*)"', seg)
-            pm = re.search(r'z-image-loader-url="([^"]+)"', seg)
+            pm = re.search(r'<img[^>]+src="([^"]+)"', seg)
             out.append({
                 "vod_id": vid,
                 "vod_name": self._clean(am.group(1)) if am else vid,
-                "vod_pic": pm.group(1) if pm else "",
+                "vod_pic": self._abs(pm.group(1)) if pm else "",
                 "vod_remarks": "",
             })
         return out
@@ -142,7 +142,15 @@ class Spider(BaseSpider):
 
     def homeContent(self, filter=None):
         h = self._get("/")
-        return {"class": self._classes(h), "filters": {}, "list": self._cards(h)}
+        cards = self._cards(h)
+        if not cards:
+            cards = [{
+                "vod_id": "diag",
+                "vod_name": "诊断 h=%d %s" % (len(h), h[:80].replace("\n", " ")),
+                "vod_pic": "",
+                "vod_remarks": "",
+            }]
+        return {"class": self._classes(h), "filters": {}, "list": cards}
 
     def homeVideoContent(self):
         return {"list": self._cards(self._get("/"))}
