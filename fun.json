@@ -48,7 +48,7 @@
    "key": "py_Youavhub",
    "name": "Youavhub[py]",
    "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/youav.py",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/youav.py?v=2",
    "ext": ""
   },
   {
