@@ -104,6 +104,11 @@ class Spider(BaseSpider):
             return self.host + u
         return u
 
+    @staticmethod
+    def _proxy(url):
+        from urllib.parse import quote
+        return "http://127.0.0.1:9978/proxy?do=py&url=" + quote(url, safe="")
+
     def _cards(self, h):
         out = []
         seen = set()
@@ -200,7 +205,7 @@ class Spider(BaseSpider):
             "vod_remarks": "" if play else "无线路",
             "vod_content": diag,
             "vod_play_from": "XP天堂",
-            "vod_play_url": ("正片$" + play) if play else "",
+            "vod_play_url": ("正片$" + self._proxy(play)) if play else "",
         }]}
 
     def playerContent(self, flag, id, vipFlags=None):
@@ -220,7 +225,52 @@ class Spider(BaseSpider):
         return False
 
     def localProxy(self, param):
-        return None
+        import urllib.parse as _up
+        if isinstance(param, str):
+            text = param.strip()
+            if text.startswith("http"):
+                param = dict(_up.parse_qsl(_up.urlsplit(text).query))
+            elif text.startswith("{"):
+                import json as _json
+                try:
+                    param = _json.loads(text)
+                except Exception:
+                    param = {}
+            else:
+                param = dict(_up.parse_qsl(text))
+        if not isinstance(param, dict):
+            param = {}
+        target = str(param.get("url") or "")
+        if not target:
+            return [404, "text/plain", b"Not Found", {}]
+        hd = {"User-Agent": UA, "Referer": self.host + "/"}
+        try:
+            req = Request(target, headers=hd)
+            ctx = self._ssl_ctx()
+            if ctx is not None:
+                resp = urlopen(req, timeout=30, context=ctx)
+            else:
+                resp = urlopen(req, timeout=30)
+            data = resp.read()
+            ct = (resp.headers.get("Content-Type") or "").lower()
+            try:
+                resp.close()
+            except Exception:
+                pass
+        except Exception as e:
+            return [500, "text/plain", ("proxy err: " + str(e)).encode("utf-8", "ignore"), {}]
+        if ".m3u8" in target or "mpegurl" in ct:
+            text2 = data.decode("utf-8", "ignore")
+            out = []
+            for ln in text2.splitlines():
+                s = ln.strip()
+                if s and not s.startswith("#"):
+                    out.append(self._proxy(self._abs(s)))
+                else:
+                    out.append(ln)
+            return [200, "application/vnd.apple.mpegurl",
+                    "\n".join(out).encode("utf-8"), {}]
+        return [200, ct or "application/octet-stream", data, {}]
 
     def getDependence(self):
         return []
