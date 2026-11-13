@@ -145,14 +145,17 @@ class Spider(BaseSpider):
         play_from = str(it.get("vod_play_from") or "youavhub")
         content = str(it.get("vod_content") or it.get("vod_blurb") or "").strip()
         lines = []
-        if it.get("vod_remarks"):
-            lines.append("【状态】%s" % it.get("vod_remarks"))
-        if it.get("vod_year"):
-            lines.append("【年份】%s" % it.get("vod_year"))
-        if it.get("vod_area"):
-            lines.append("【地区】%s" % it.get("vod_area"))
         if content:
             lines.append(content)
+        meta = []
+        if it.get("vod_year"):
+            meta.append(str(it.get("vod_year")))
+        if it.get("vod_area"):
+            meta.append(str(it.get("vod_area")))
+        if it.get("vod_remarks"):
+            meta.append(str(it.get("vod_remarks")))
+        if meta:
+            lines.append(" · ".join(meta))
         return {"list": [{
             "vod_id": vid,
             "vod_name": str(it.get("vod_name") or vid),
