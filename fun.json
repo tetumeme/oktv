@@ -495,7 +495,7 @@
    "key": "kanliao",
    "name": "今日看料[py]",
    "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/kanliao.py",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/kanliao.py?v=2",
    "ext": "proxy",
    "searchable": 1,
    "quickSearch": 1,
