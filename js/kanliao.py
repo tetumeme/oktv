@@ -92,23 +92,22 @@ class Spider(BaseSpider):
     def _cards(self, h):
         out = []
         seen = set()
-        for m in re.finditer(r"<article", h or ""):
-            seg = h[m.start():m.start() + 8000]
-            am = re.search(r'href="(https?://[^"]*?/archives/(\d+)/)"', seg)
-            if not am:
-                continue
-            vid = am.group(2)
+        for m in re.finditer(r'id="post-card-(\d+)"', h or ""):
+            vid = m.group(1)
             if vid in seen:
                 continue
             seen.add(vid)
-            tm = re.search(r"<h[1-3][^>]*>([\s\S]{0,200}?)</h[1-3]>", seg)
+            seg = h[m.start():m.start() + 3000]
+            tm = re.search(r'post-card-title[^>]*>([\s\S]{0,400}?)</h2>', seg)
             name = self._clean(tm.group(1)) if tm else vid
-            name = re.sub(r"^(热搜\s*HOT|HOT|置顶)\s*", "", name).strip()
-            im = re.search(r'(?:data-src|data-original|src)="(https?://[^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"', seg)
+            name = re.sub(r"^(热搜\s*HOT|HOT|置顶|推荐)\s*", "", name).strip()
+            pm = re.search(r"background-image:\s*url\(['\"]?([^'\")]+)", seg)
+            if not pm:
+                pm = re.search(r'<img[^>]+(?:data-src|src)="(https?://[^"]+)"', seg)
             out.append({
                 "vod_id": vid,
                 "vod_name": name or vid,
-                "vod_pic": im.group(1) if im else "",
+                "vod_pic": pm.group(1) if pm else "",
                 "vod_remarks": "",
             })
         return out
