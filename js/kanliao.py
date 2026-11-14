@@ -101,6 +101,9 @@ class Spider(BaseSpider):
             tm = re.search(r'post-card-title[^>]*>([\s\S]{0,400}?)</h2>', seg)
             name = self._clean(tm.group(1)) if tm else vid
             name = re.sub(r"^(热搜\s*HOT|HOT|置顶|推荐)\s*", "", name).strip()
+            # 取不到标题（回落成 id）或标题就是纯数字的，是站点里的推广位，直接跳过
+            if not name or re.fullmatch(r"\d+", name):
+                continue
             pm = re.search(r"background-image:\s*url\(['\"]?([^'\")]+)", seg)
             if not pm:
                 pm = re.search(r'<img[^>]+(?:data-src|src)="(https?://[^"]+)"', seg)
