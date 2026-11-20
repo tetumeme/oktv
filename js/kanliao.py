@@ -110,13 +110,22 @@ class Spider(BaseSpider):
             # 取不到标题（回落成 id）或标题就是纯数字的，是站点里的推广位，直接跳过
             if not name or re.fullmatch(r"\d+", name):
                 continue
-            pm = re.search(r"background-image:\s*url\(['\"]?([^'\")]+)", seg)
+            pm = re.search(r"background-image:\s*url\(&quot;([^&]+)&quot;", seg)
             if not pm:
-                pm = re.search(r'<img[^>]+(?:data-src|src)="(https?://[^"]+)"', seg)
+                pm = re.search(r"background-image:\s*url\(['\"]?([^'\")]+)", seg)
+            if not pm:
+                pm = re.search(r'<img[^>]+(?:data-src|src)="([^"]+)"', seg)
+            pic = ""
+            if pm:
+                pic = html_lib.unescape(pm.group(1)).strip().strip("'\"")
+                if pic.startswith("//"):
+                    pic = "https:" + pic
+                elif pic.startswith("/"):
+                    pic = self.host + pic
             out.append({
                 "vod_id": vid,
                 "vod_name": name or vid,
-                "vod_pic": pm.group(1) if pm else "",
+                "vod_pic": pic,
                 "vod_remarks": "",
             })
         return out
