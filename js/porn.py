@@ -630,7 +630,7 @@ class Spider(_BaseSpider):
         type_name = info.get("tags") or "肉视频"
         lines = []
         dsc = info.get("desc") or ""
-        if dsc and dsc != vod_name and len(dsc) > len(vod_name) + 6:
+        if dsc and dsc.strip() != vod_name.strip():
             lines.append(dsc)
         meta = []
         if info.get("vid"):
@@ -690,9 +690,15 @@ class Spider(_BaseSpider):
             m = re.search(r'coverImageUrl:"([^"]+)"', html)
             if m:
                 out["pic"] = m.group(1)
-        m = re.search(r">影片簡介</summary>\s*<p[^>]*>([\s\S]{0,800}?)</p>", html)
+        m = re.search(r">影片簡介</summary>([\s\S]{0,3000}?)</details>", html)
         if m:
-            out["desc"] = self._clean(m.group(1))
+            _parts = []
+            for _p in re.findall(r"<p[^>]*>([\s\S]{0,1000}?)</p>", m.group(1)):
+                _tx = self._clean(_p)
+                if _tx:
+                    _parts.append(_tx)
+            if _parts:
+                out["desc"] = "\n".join(_parts)
         m = re.search(r'<div class="hidden">([^<]{1,300})</div>', html)
         if m:
             out["tags"] = self._clean(m.group(1))
