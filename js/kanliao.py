@@ -18,11 +18,12 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36")
 
 DEF_CATS = [
-    {"type_id": "dy", "type_name": "电影"},
     {"type_id": "rdgz", "type_name": "热点关注"},
+    {"type_id": "dy", "type_name": "抖音"},
     {"type_id": "ks", "type_name": "快手"},
     {"type_id": "douyu", "type_name": "斗鱼"},
-    {"type_id": "hy", "type_name": "黑料"},
+    {"type_id": "hy", "type_name": "虎牙"},
+    {"type_id": "hj", "type_name": "花椒"},
 ]
 
 try:
@@ -88,6 +89,11 @@ class Spider(BaseSpider):
         t = re.sub(r"<[^>]+>", "", str(t or ""))
         t = html_lib.unescape(t)
         return re.sub(r"\s+", " ", t).strip()
+
+    @staticmethod
+    def _proxy(url):
+        from urllib.parse import quote
+        return "http://127.0.0.1:9978/proxy?do=py&url=" + quote(url, safe="")
 
     def _cards(self, h):
         out = []
@@ -174,7 +180,7 @@ class Spider(BaseSpider):
         urls = re.findall(r'https?://[^"\'\s<>\\]+\.m3u8[^"\'\s<>\\]*', h)
         play = ""
         if urls:
-            play = "正片$" + html_lib.unescape(urls[0])
+            play = "正片$" + self._proxy(html_lib.unescape(urls[0]))
         desc = ""
         m = re.search(r'<meta name="description" content="([^"]+)"', h)
         if m:
@@ -206,7 +212,51 @@ class Spider(BaseSpider):
         return False
 
     def localProxy(self, param):
-        return None
+        import urllib.parse as _up
+        if isinstance(param, str):
+            text = param.strip()
+            if text.startswith("http"):
+                param = dict(_up.parse_qsl(_up.urlsplit(text).query))
+            elif text.startswith("{"):
+                import json as _json
+                try:
+                    param = _json.loads(text)
+                except Exception:
+                    param = {}
+            else:
+                param = dict(_up.parse_qsl(text))
+        if not isinstance(param, dict):
+            param = {}
+        target = str(param.get("url") or "")
+        if not target:
+            return [404, "text/plain", b"Not Found", {}]
+        hd = {"User-Agent": UA, "Referer": self.host + "/"}
+        try:
+            req = Request(target, headers=hd)
+            ctx = self._ssl_ctx()
+            if ctx is not None:
+                resp = urlopen(req, timeout=30, context=ctx)
+            else:
+                resp = urlopen(req, timeout=30)
+            data = resp.read()
+            ct = (resp.headers.get("Content-Type") or "").lower()
+            try:
+                resp.close()
+            except Exception:
+                pass
+        except Exception as e:
+            return [500, "text/plain", ("proxy err: " + str(e)).encode("utf-8", "ignore"), {}]
+        if ".m3u8" in target or "mpegurl" in ct:
+            text2 = data.decode("utf-8", "ignore")
+            out = []
+            for ln in text2.splitlines():
+                s = ln.strip()
+                if s and not s.startswith("#"):
+                    out.append(self._proxy(s if s.startswith("http") else ("%s%s" % (self.host, s if s.startswith("/") else "/" + s))))
+                else:
+                    out.append(ln)
+            return [200, "application/vnd.apple.mpegurl", "\n".join(out).encode("utf-8"), {}]
+        return [200, ct or "application/octet-stream", data, {}]
 
     def getDependence(self):
         return []
