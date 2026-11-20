@@ -690,15 +690,22 @@ class Spider(_BaseSpider):
             m = re.search(r'coverImageUrl:"([^"]+)"', html)
             if m:
                 out["pic"] = m.group(1)
+        _parts = []
         m = re.search(r">影片簡介</summary>([\s\S]{0,3000}?)</details>", html)
         if m:
-            _parts = []
             for _p in re.findall(r"<p[^>]*>([\s\S]{0,1000}?)</p>", m.group(1)):
                 _tx = self._clean(_p)
                 if _tx:
                     _parts.append(_tx)
-            if _parts:
-                out["desc"] = "\n".join(_parts)
+        _dp = "\n".join(_parts)
+        _dm = ""
+        m = re.search(r'property="og:description" content="([^"]+)"', html)
+        if not m:
+            m = re.search(r'name="description" content="([^"]+)"', html)
+        if m:
+            _dm = self._clean(m.group(1))
+            _dm = re.sub(r"^无限免费高清视频在线播放。?\s*", "", _dm).strip()
+        out["desc"] = _dp if len(_dp) >= len(_dm) else _dm
         m = re.search(r'<div class="hidden">([^<]{1,300})</div>', html)
         if m:
             out["tags"] = self._clean(m.group(1))
