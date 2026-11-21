@@ -80,19 +80,50 @@ class Spider(BaseSpider):
         except Exception:
             return {'class': classes, 'filters': filters, 'list': []}
 
+    def _raw_get(self, url):
+        import urllib.request
+        hd = {
+            "User-Agent": "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+            "Referer": self.host + "/",
+            "Cookie": "x-index-auth=authed",
+            "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+        }
+        try:
+            req = urllib.request.Request(url, headers=hd)
+            resp = urllib.request.urlopen(req, timeout=20)
+            data = resp.read()
+            try:
+                resp.close()
+            except Exception:
+                pass
+            return data.decode("utf-8", "ignore")
+        except Exception:
+            return ""
+
+    def _ok(self, text):
+        if not text or len(text) < 2000:
+            return False
+        if "continueBtn" in text:
+            return False
+        return True
+
     def _get(self, url):
         for host in [self.host] + [h for h in FALLBACK_HOSTS if h != self.host]:
             u = url.replace(self.host, host)
+            text = ""
             try:
                 hd = dict(self.headers or {})
                 hd["Cookie"] = "x-index-auth=authed"
                 r = self.fetch(u, headers=hd, timeout=20)
                 text = getattr(r, 'text', '') or ''
-                if text and len(text) > 2000 and "continueBtn" not in text and "x-index-auth" not in text:
-                    self.host = host
-                    return text
             except Exception:
-                continue
+                text = ""
+            if not self._ok(text):
+                text = self._raw_get(u)
+            if self._ok(text):
+                self.host = host
+                return text
         return ""
 
     def categoryContent(self, tid, pg, filter, extend):
