@@ -238,7 +238,7 @@ class Spider(BaseSpider):
     def _item(self, it):
         vid = str(it.get("_id") or "")
         title = self._title(it)
-        pic = str(it.get("wide_thumbnail") or it.get("thumbnail_image") or "")
+        pic = str(it.get("wide_thumbnail") or it.get("thumbnail_image") or it.get("cover_url") or it.get("thumbnail") or "")
         remark = str(it.get("share_date") or "")
         score = it.get("imdb_score")
         if score:
@@ -368,7 +368,7 @@ class Spider(BaseSpider):
             "vod_id": vid,
             "vod_name": (title + " " + desc) if desc else title,
             "vod_pic": pic,
-            "vod_remarks": "" if play else ("无线路 " + str(getattr(self, "_dbg", ""))),
+            "vod_remarks": "" if play else "无在线源",
             "vod_content": content if content else title,
             "vod_play_from": "Manko",
             "vod_play_url": play,
