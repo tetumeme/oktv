@@ -277,7 +277,7 @@
    },
    "api": "csp_GM",
    "ext": {
-    "userScript": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/18av.user.js?v=6",
+    "userScript": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/18av.user.js?v=7",
     "debug": false,
     "webViewSettings": {
      "blockNetworkImage": false,
