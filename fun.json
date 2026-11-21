@@ -496,9 +496,9 @@
   },
   {
    "key": "manko",
-   "name": "Manko[py] v8",
+   "name": "Manko[py] v9",
    "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/manko.py?v=9",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/manko.py?v=10",
    "ext": "proxy",
    "searchable": 1,
    "quickSearch": 1,
