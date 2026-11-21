@@ -351,8 +351,6 @@ class Spider(BaseSpider):
         if d.get("share_date"):
             meta.append(str(d.get("share_date")))
         parts = []
-        if desc:
-            parts.append(desc)
         if meta:
             parts.append(" / ".join(meta))
         content = "\n".join(parts)
@@ -368,7 +366,7 @@ class Spider(BaseSpider):
 
         return {"list": [{
             "vod_id": vid,
-            "vod_name": title,
+            "vod_name": (title + " " + desc) if desc else title,
             "vod_pic": pic,
             "vod_remarks": "" if play else ("无线路 " + str(getattr(self, "_dbg", ""))),
             "vod_content": content if content else title,
