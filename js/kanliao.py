@@ -183,7 +183,7 @@ class Spider(BaseSpider):
             page = int(pg)
         slug = str(tid or "dy")
         if page > 1:
-            path = "/category/" + slug + "/page/" + str(page) + "/"
+            path = "/page/" + str(page) + "/"
         else:
             path = "/category/" + slug + "/"
         cards = self._cards(self._get(path))
