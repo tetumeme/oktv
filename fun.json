@@ -493,7 +493,7 @@
   },
   {
    "key": "kanliao",
-   "name": "今日看料[py] v5",
+   "name": "今日看料[py] v6",
    "type": 3,
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/kanliao.py?v=8",
    "ext": "proxy",
