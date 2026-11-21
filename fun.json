@@ -1,10 +1,10 @@
 {
  "sites": [
   {
-   "key": "cg51",
-   "name": "51吃瓜[py] v4",
+   "key": "cg51v5",
+   "name": "51吃瓜[py] v5",
    "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/cg51.py?v=4",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/cg51.py?v=5",
    "ext": "",
    "searchable": 1,
    "quickSearch": 1
