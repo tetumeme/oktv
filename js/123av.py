@@ -139,7 +139,7 @@ class Spider(BaseSpider):
             out.append({
                 "vod_id": vid,
                 "vod_name": self._clean(tm.group(1)) if tm else vid,
-                "vod_pic": self._proxy(im.group(1)) if im else "",
+                "vod_pic": im.group(1) if im else "",
                 "vod_remarks": self._clean(dm.group(1)) if dm else "",
             })
         return out
