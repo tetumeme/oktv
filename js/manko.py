@@ -103,13 +103,16 @@ class Spider(BaseSpider):
                 self._ctx = False
         return self._ctx
 
-    def _open(self, url, timeout=25):
+    def _open(self, url, timeout=25, api=False):
         headers = {
             "User-Agent": UA,
             "Referer": self.host + "/",
-            "Origin": self.host,
-            "Accept": "application/json, text/plain, */*",
         }
+        if api:
+            headers["Origin"] = self.host
+            headers["Accept"] = "application/json, text/plain, */*"
+        else:
+            headers["Accept"] = "*/*"
         try:
             req = Request(url, headers=headers)
             ctx = self._ctxfeed()
@@ -129,7 +132,7 @@ class Spider(BaseSpider):
 
     def _api(self, path):
         url = path if path.startswith("http") else API + path
-        body, ctype = self._open(url)
+        body, ctype = self._open(url, True)
         if not body:
             return None
         try:
@@ -149,6 +152,33 @@ class Spider(BaseSpider):
 
     def _proxy(self, url):
         return "http://127.0.0.1:9978/proxy?do=py&url=" + quote(url, safe="")
+
+    def _media(self, url):
+        hd = {"User-Agent": UA, "Referer": self.host + "/"}
+        err = ""
+        try:
+            net = getattr(self, "net", None)
+            if net is None:
+                err = "no net"
+            else:
+                r = net.req(url, {"headers": hd, "buffer": 3})
+                if isinstance(r, dict):
+                    code = int(r.get("code") or 0)
+                    if code == 200:
+                        cv = r.get("content")
+                        if isinstance(cv, bytearray):
+                            cv = bytes(cv)
+                        if isinstance(cv, bytes):
+                            return cv, "", 200
+                    err = "net " + str(code)
+                else:
+                    err = "net bad"
+        except Exception as e:
+            err = "net err " + str(e)[:60]
+        body, ctype = self._open(url)
+        if body is None:
+            return None, err, 0
+        return body, ctype, 200
 
     def _title(self, it):
         names = it.get("title_display_name")
@@ -306,9 +336,9 @@ class Spider(BaseSpider):
         if not target:
             return [404, "text/plain", b"Not Found", {}]
 
-        body, ctype = self._open(target, 30)
+        body, ctype, perr = self._media(target)
         if body is None:
-            return [502, "text/plain", b"upstream failed", {}]
+            return [502, "text/plain", ("upstream failed: " + str(perr)).encode("utf-8"), {}]
 
         low = body[:16].lower()
         if b"#extm3u" in low:
