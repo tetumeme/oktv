@@ -216,17 +216,44 @@ class Spider(BaseSpider):
             _iv = " · ".join(self._clean(x) for x in _chips) if _chips else self._clean(_iraw)
             if _ik and _iv:
                 info.append("%s：%s" % (_ik, _iv))
+        # 同一番号的其他版本（如「无码泄露」）也挂进选集
+        plays = []
+        if stream:
+            plays.append(("正片", stream))
+        vm = re.search(r'<div class="watch__versions">([\s\S]{0,3000}?)</div>', h or "")
+        if vm:
+            for am in re.finditer(r'href="(/cn/v/[^"]+)"[^>]*>([^<]{1,30})</a>', vm.group(1)):
+                vhref = am.group(1)
+                vlabel = re.sub(r"[#$]", " ", self._clean(am.group(2))).strip() or "其他版本"
+                if not vhref:
+                    continue
+                ph = self._get(vhref)
+                hh = re.sub(r"\\+/", "/", ph or "")
+                for cd in re.findall(r"sadie-shop\.site/e/([A-Za-z0-9_]+)", hh):
+                    rp = self._fetch(EMBED + "/stream?id=" + cd,
+                                     referer=EMBED + "/e/" + cd, origin=EMBED)
+                    try:
+                        jj = json.loads(rp)
+                        st = str((jj.get("media") or {}).get("stream") or "")
+                    except Exception:
+                        st = ""
+                    if st:
+                        if st != stream:
+                            plays.append((vlabel, st))
+                        break
+        url = "#".join(nm + "$" + u for nm, u in plays)
+
         diag = "h=%d code=%d" % (len(h), len(codes))
-        if not stream:
+        if not plays:
             diag = diag + " resp=" + self._clean(resp)[:90]
         return {"list": [{
             "vod_id": vid,
             "vod_name": title or vid,
             "vod_pic": pic,
-            "vod_remarks": "" if stream else diag,
+            "vod_remarks": "" if plays else diag,
             "vod_content": "\n".join(info),
             "vod_play_from": "123AV",
-            "vod_play_url": ("正片$" + stream) if stream else "",
+            "vod_play_url": url,
         }]}
 
     def playerContent(self, flag, id, vipFlags=None):
