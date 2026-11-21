@@ -1,6 +1,14 @@
 {
  "sites": [
   {
+   "key": "cg51",
+   "name": "51吃瓜[py] v1",
+   "type": 3,
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/cg51.py?v=1",
+   "searchable": 1,
+   "quickSearch": 1
+  },
+  {
    "key": "精品资源站",
    "name": "精品 | 采集",
    "type": 3,
