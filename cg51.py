@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# 51吃瓜（51cg1）FongMi 源 v5
+# 51吃瓜（51cg1）FongMi 源 v6
 # 域名从 cg51.com 发布页解析；列表用 post-card，详情播放地址在 dplayer 的 data-config JSON。
 import gzip
 import html as html_lib
@@ -242,7 +242,8 @@ class Spider(BaseSpider):
                 j = json.loads(html_lib.unescape(c))
             except Exception:
                 continue
-            u = str(j.get("url") or "").strip()
+            vv = j.get("video") if isinstance(j.get("video"), dict) else {}
+            u = str(j.get("url") or vv.get("url") or "").strip()
             if u and u not in urls:
                 urls.append(u)
         if not urls:
