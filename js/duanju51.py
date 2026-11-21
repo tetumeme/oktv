@@ -20,8 +20,9 @@ import ssl
 from urllib.parse import quote
 
 HOST = "https://blue.xdrgcewe.cc"
-UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-      "(KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36")
+UA = ("Mozilla/5.0 (Linux; Android 16; PKM110 Build/BP2A.250605.015) "
+      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.7204.179 "
+      "Mobile Safari/537.36")
 
 CATEGORIES = [
     {"type_id": "ai-duanju", "type_name": "AI成人短剧"},
@@ -181,6 +182,8 @@ class Spider(BaseSpider):
             dm = re.search(r'name="description" content="([^"]*)"', h or "")
             if dm:
                 desc = self._clean(dm.group(1))
+        if desc:
+            desc = re.sub(r"[….、，\s]*免费在线观看[\s\S]*$", "", desc).strip()
         eps = []
         seen = set()
         for sm in re.finditer(r'data-play-src="([^"]+)"', h or ""):
