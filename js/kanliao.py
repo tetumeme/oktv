@@ -15,6 +15,7 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36")
 
 DEF_CATS = [
+    {"type_id": "all", "type_name": "推荐"},
     {"type_id": "rdgz", "type_name": "热点关注"},
     {"type_id": "dy", "type_name": "抖音"},
     {"type_id": "ks", "type_name": "快手"},
@@ -167,7 +168,7 @@ class Spider(BaseSpider):
             if len(cls) >= 10:
                 break
         if cls:
-            return cls
+            return [{"type_id": "all", "type_name": "推荐"}] + cls
         return list(DEF_CATS)
 
     def homeContent(self, filter=None):
@@ -182,7 +183,9 @@ class Spider(BaseSpider):
         if str(pg).isdigit():
             page = int(pg)
         slug = str(tid or "dy")
-        if page > 1:
+        if slug == "all":
+            path = "/" if page <= 1 else "/page/" + str(page) + "/"
+        elif page > 1:
             path = "/page/" + str(page) + "/"
         else:
             path = "/category/" + slug + "/"
