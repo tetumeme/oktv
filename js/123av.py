@@ -111,6 +111,11 @@ class Spider(BaseSpider):
         t = html_lib.unescape(t)
         return re.sub(r"\s+", " ", t).strip()
 
+    @staticmethod
+    def _proxy(url):
+        from urllib.parse import quote
+        return "http://127.0.0.1:9978/proxy?do=py&url=" + quote(url, safe="")
+
     def _cards(self, h):
         out = []
         seen = set()
@@ -132,7 +137,7 @@ class Spider(BaseSpider):
             out.append({
                 "vod_id": vid,
                 "vod_name": self._clean(tm.group(1)) if tm else vid,
-                "vod_pic": im.group(1) if im else "",
+                "vod_pic": self._proxy(im.group(1)) if im else "",
                 "vod_remarks": self._clean(dm.group(1)) if dm else "",
             })
         return out
@@ -148,7 +153,7 @@ class Spider(BaseSpider):
         t = str(tid or "new")
         cards = self._cards(self._get("/cn/" + t + "?page=" + str(page)))
         return {"list": cards, "page": page, "pagecount": 999,
-                "limit": len(cards), "total": len(cards)}
+                "limit": len(cards), "total": 999999}
 
     def searchContent(self, key, quick=False, pg="1"):
         kw = str(key or "").strip()
@@ -157,7 +162,7 @@ class Spider(BaseSpider):
         page = int(pg) if str(pg).isdigit() else 1
         cards = self._cards(self._get("/cn/search?q=" + quote(kw) + "&page=" + str(page)))
         return {"list": cards, "page": page, "pagecount": 999,
-                "limit": len(cards), "total": len(cards)}
+                "limit": len(cards), "total": 999999}
 
     def _stream(self, code):
         txt = self._fetch(EMBED + "/stream?id=" + code,
@@ -231,7 +236,41 @@ class Spider(BaseSpider):
         return False
 
     def localProxy(self, param):
-        return None
+        import urllib.parse as _up
+        if isinstance(param, str):
+            text = param.strip()
+            if text.startswith("http"):
+                param = dict(_up.parse_qsl(_up.urlsplit(text).query))
+            elif text.startswith("{"):
+                import json as _json
+                try:
+                    param = _json.loads(text)
+                except Exception:
+                    param = {}
+            else:
+                param = dict(_up.parse_qsl(text))
+        if not isinstance(param, dict):
+            param = {}
+        target = str(param.get("url") or "")
+        if not target:
+            return [404, "text/plain", b"Not Found", {}]
+        hd = {"User-Agent": UA, "Referer": self.host + "/"}
+        try:
+            req = Request(target, headers=hd)
+            ctx = self._ssl_ctx()
+            if ctx is not None:
+                resp = urlopen(req, timeout=25, context=ctx)
+            else:
+                resp = urlopen(req, timeout=25)
+            data = resp.read()
+            ct = (resp.headers.get("Content-Type") or "").lower()
+            try:
+                resp.close()
+            except Exception:
+                pass
+        except Exception as e:
+            return [500, "text/plain", ("proxy err: " + str(e)).encode("utf-8", "ignore"), {}]
+        return [200, ct or "application/octet-stream", data, {}]
 
     def getDependence(self):
         return []
