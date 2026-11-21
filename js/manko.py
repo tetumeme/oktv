@@ -16,15 +16,14 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36")
 
 CLASSES = [
-    {"type_id": "pop", "type_name": "最热"},
-    {"type_id": "top", "type_name": "最高分"},
-    {"type_id": "new", "type_name": "最新"},
-    {"type_id": "sub", "type_name": "中文字幕"},
-    {"type_id": "Censored", "type_name": "有码"},
-    {"type_id": "Uncensored", "type_name": "无码"},
-    {"type_id": "FC2", "type_name": "FC2"},
+    {"type_id": "pop", "type_name": "热门"},
+    {"type_id": "Censored", "type_name": "已删减"},
+    {"type_id": "Uncensored", "type_name": "未删减"},
     {"type_id": "Leaked", "type_name": "流出"},
-    {"type_id": "No Mosaic", "type_name": "无修正"},
+    {"type_id": "No Mosaic", "type_name": "无码"},
+    {"type_id": "FC2", "type_name": "FC2"},
+    {"type_id": "Top Rated", "type_name": "最高评分"},
+    {"type_id": "new", "type_name": "最新"},
 ]
 
 B91 = ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
