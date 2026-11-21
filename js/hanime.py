@@ -84,9 +84,11 @@ class Spider(BaseSpider):
         for host in [self.host] + [h for h in FALLBACK_HOSTS if h != self.host]:
             u = url.replace(self.host, host)
             try:
-                r = self.fetch(u, headers=self.headers, timeout=20)
+                hd = dict(self.headers or {})
+                hd["Cookie"] = "x-index-auth=authed"
+                r = self.fetch(u, headers=hd, timeout=20)
                 text = getattr(r, 'text', '') or ''
-                if text and len(text) > 2000:
+                if text and len(text) > 2000 and "continueBtn" not in text and "x-index-auth" not in text:
                     self.host = host
                     return text
             except Exception:
