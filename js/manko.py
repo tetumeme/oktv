@@ -78,6 +78,7 @@ class Spider(BaseSpider):
             pass
         self.host = HOST
         self._ctx = None
+        self._names = {}
 
     def init(self, extend=""):
         self.host = HOST
@@ -153,25 +154,32 @@ class Spider(BaseSpider):
 
     def _resolve(self, embed):
         # sadie-shop 中转页 /e/{code} -> /stream?id={code} -> media.stream
+        self._dbg = ""
         code = ""
         mm = re.search(r"/e/([A-Za-z0-9]+)", str(embed or ""))
         if mm:
             code = mm.group(1)
         if not code:
+            self._dbg = "无 code(" + str(embed or "")[:40] + ")"
             return ""
         body, ctype = self._open(EMBED + "/stream?id=" + code)
         if not body:
+            self._dbg = "stream 空 " + code
             return ""
+        self._dbg = "stream " + str(len(body))
         try:
             obj = json.loads(body.decode("utf-8", "ignore"))
         except Exception:
+            self._dbg = "stream 非JSON " + body[:40].decode("utf-8", "ignore")
             return ""
         if isinstance(obj, dict):
             media = obj.get("media")
             if isinstance(media, dict):
                 s = str(media.get("stream") or "")
                 if s.startswith("http"):
+                    self._dbg = "ok " + code
                     return s
+        self._dbg = "无 stream 字段"
         return ""
 
     def _proxy(self, url):
@@ -206,13 +214,20 @@ class Spider(BaseSpider):
 
     def _title(self, it):
         names = it.get("title_display_name")
+        first = ""
         if isinstance(names, list):
             for n in names:
-                if isinstance(n, dict):
-                    if n.get("language") in ("zh", "zh-CN", "tw", "zh-TW"):
-                        t = str(n.get("title") or "").strip()
-                        if t:
-                            return t
+                if not isinstance(n, dict):
+                    continue
+                t = str(n.get("title") or "").strip()
+                if not t:
+                    continue
+                if n.get("language") in ("zh", "zh-CN", "tw", "zh-TW"):
+                    return t
+                if not first:
+                    first = t
+        if first:
+            return first
         return str(it.get("title") or "")
 
     def _item(self, it):
@@ -226,6 +241,8 @@ class Spider(BaseSpider):
                 remark = remark + " · " + str(score)
             else:
                 remark = str(score)
+        if vid and title:
+            self._names[vid] = title
         return {"vod_id": vid, "vod_name": title, "vod_pic": pic, "vod_remarks": remark}
 
     def _list(self, tid, page):
@@ -288,7 +305,7 @@ class Spider(BaseSpider):
                               "vod_remarks": "无数据", "vod_content": "",
                               "vod_play_from": "Manko", "vod_play_url": ""}]}
 
-        title = self._title(d)
+        title = self._names.get(vid) or self._title(d)
         if not title:
             title = vid
         pic = str(d.get("cover_image") or "")
@@ -327,7 +344,7 @@ class Spider(BaseSpider):
             "vod_id": vid,
             "vod_name": title,
             "vod_pic": pic,
-            "vod_remarks": "" if play else "无线路",
+            "vod_remarks": "" if play else ("无线路 " + str(getattr(self, "_dbg", ""))),
             "vod_content": content if content else title,
             "vod_play_from": "Manko",
             "vod_play_url": play,
