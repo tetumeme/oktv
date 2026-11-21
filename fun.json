@@ -216,17 +216,7 @@
    "timeout": 60,
    "ext": "proxy"
   },
-  {
-   "key": "lav",
-   "name": "lav",
-   "type": 3,
-   "api": "https://raw.githubusercontent.com/cluntop/tvbox/main/py/lavAPP.py",
-   "searchable": 1,
-   "quickSearch": 1,
-   "filterable": 0,
-   "changeable": 0,
-   "ext": "proxy"
-  },
+
   {
    "key": "pornhub",
    "name": "Pornhub[py]",
