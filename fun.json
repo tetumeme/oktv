@@ -2,9 +2,9 @@
  "sites": [
   {
    "key": "cg51v5",
-   "name": "51吃瓜[py] v7",
+   "name": "51吃瓜[py] v9",
    "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/cg51.py?v=7",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/cg51.py?v=9",
    "ext": "",
    "searchable": 1,
    "quickSearch": 1
