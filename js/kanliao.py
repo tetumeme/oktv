@@ -140,6 +140,8 @@ class Spider(BaseSpider):
             name = re.sub(r'^(热搜\s*HOT|HOT|置顶|推荐)\s*', '', name).strip()
             if not name or re.match(r'^\d+$', name) or vid in seen:
                 continue
+            if "视频无法播放" in name or "DNS" in name.upper():
+                continue
             seen.add(vid)
             pic = ""
             pm = re.search(r"loadBannerDirect\('([^']+)'", seg)
