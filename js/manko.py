@@ -11,6 +11,7 @@ from urllib.request import Request, urlopen
 
 HOST = "https://manko.fun"
 API = "https://alpharomeo.shop/"
+EMBED = "https://sadie-shop.site"
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36")
 
@@ -150,6 +151,29 @@ class Spider(BaseSpider):
         except Exception:
             return None
 
+    def _resolve(self, embed):
+        # sadie-shop 中转页 /e/{code} -> /stream?id={code} -> media.stream
+        code = ""
+        mm = re.search(r"/e/([A-Za-z0-9]+)", str(embed or ""))
+        if mm:
+            code = mm.group(1)
+        if not code:
+            return ""
+        body, ctype = self._open(EMBED + "/stream?id=" + code)
+        if not body:
+            return ""
+        try:
+            obj = json.loads(body.decode("utf-8", "ignore"))
+        except Exception:
+            return ""
+        if isinstance(obj, dict):
+            media = obj.get("media")
+            if isinstance(media, dict):
+                s = str(media.get("stream") or "")
+                if s.startswith("http"):
+                    return s
+        return ""
+
     def _proxy(self, url):
         return "http://127.0.0.1:9978/proxy?do=py&url=" + quote(url, safe="")
 
@@ -169,7 +193,7 @@ class Spider(BaseSpider):
                         if isinstance(cv, bytearray):
                             cv = bytes(cv)
                         if isinstance(cv, bytes):
-                            return cv, "", 200
+                            return cv, "", ""
                     err = "net " + str(code)
                 else:
                     err = "net bad"
@@ -177,8 +201,8 @@ class Spider(BaseSpider):
             err = "net err " + str(e)[:60]
         body, ctype = self._open(url)
         if body is None:
-            return None, err, 0
-        return body, ctype, 200
+            return None, "", err
+        return body, ctype, ""
 
     def _title(self, it):
         names = it.get("title_display_name")
@@ -291,9 +315,13 @@ class Spider(BaseSpider):
         content = "\n".join(parts)
 
         play = ""
-        u = str(d.get("wasabi_url_1") or "")
-        if u.startswith("http"):
-            play = "正片$" + self._proxy(u)
+        stream = self._resolve(d.get("wasabi_embed_url"))
+        if stream:
+            play = "正片$" + stream
+        else:
+            u = str(d.get("wasabi_url_1") or "")
+            if u.startswith("http"):
+                play = "正片$" + self._proxy(u)
 
         return {"list": [{
             "vod_id": vid,
