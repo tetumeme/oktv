@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# 51吃瓜（51cg1）FongMi 源 v4
+# 51吃瓜（51cg1）FongMi 源 v5
 # 域名从 cg51.com 发布页解析；列表用 post-card，详情播放地址在 dplayer 的 data-config JSON。
 import gzip
 import html as html_lib
@@ -58,6 +58,7 @@ class Spider(BaseSpider):
         except Exception:
             pass
         self.host = SITE
+        self._last = ""
         self._ctx = None
         self._resolved = False
 
@@ -105,6 +106,10 @@ class Spider(BaseSpider):
                 resp = urlopen(req, timeout=timeout, context=ctx)
             else:
                 resp = urlopen(req, timeout=timeout)
+            try:
+                self._last = resp.geturl()
+            except Exception:
+                self._last = url
             body = resp.read()
             if (resp.headers.get("Content-Encoding") or "").lower() == "gzip":
                 try:
@@ -139,8 +144,12 @@ class Spider(BaseSpider):
         for h in hosts[:3]:
             base = "https://" + h
             if "post-card" in self._get(base + "/", 8):
-                return base
+                return self._origin(base)
         return self.host
+
+    def _origin(self, fallback):
+        m = re.match(r"(https?://[^/]+)", self._last or "")
+        return m.group(1) if m else fallback
 
     # ---------- 解析 ----------
     def _pic(self, url):
@@ -237,7 +246,7 @@ class Spider(BaseSpider):
             if u and u not in urls:
                 urls.append(u)
         if not urls:
-            return {"list": [], "msg": "没有找到播放地址"}
+            return {"list": [], "msg": "无播放地址 len=%d cfg=%d" % (len(h), len(re.findall("data-config", h)))}
 
         play = "#".join(["线路%d$%s" % (i + 1, u) for i, u in enumerate(urls)])
         return {"list": [{
