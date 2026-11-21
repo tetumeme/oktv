@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# 51吃瓜（51cg1）FongMi 源 v6
+# 51吃瓜（51cg1）FongMi 源 v7
 # 域名从 cg51.com 发布页解析；列表用 post-card，详情播放地址在 dplayer 的 data-config JSON。
 import gzip
 import html as html_lib
@@ -160,6 +160,26 @@ class Spider(BaseSpider):
         except Exception:
             return url
 
+    def _cfgs(self, h):
+        out = []
+        for m in re.finditer(r"""data-config=(["'])""", h or ""):
+            start = m.end()
+            if start >= len(h) or h[start] != "{":
+                continue
+            depth = 0
+            i = start
+            while i < len(h):
+                ch = h[i]
+                if ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+                    if depth == 0:
+                        out.append(h[start:i + 1])
+                        break
+                i += 1
+        return out
+
     def _txt(self, s):
         s = re.sub(r"<[^>]+>", "", s or "")
         s = html_lib.unescape(s)
@@ -236,18 +256,20 @@ class Spider(BaseSpider):
             desc = html_lib.unescape(m.group(1))
 
         urls = []
-        cfgs = re.findall(r'data-config="([^"]*)"', h) + re.findall(r"data-config='([^']*)'", h)
+        urls_ok = 0
+        cfgs = self._cfgs(h)
         for c in cfgs:
             try:
                 j = json.loads(html_lib.unescape(c))
             except Exception:
                 continue
+            urls_ok += 1
             vv = j.get("video") if isinstance(j.get("video"), dict) else {}
             u = str(j.get("url") or vv.get("url") or "").strip()
             if u and u not in urls:
                 urls.append(u)
         if not urls:
-            return {"list": [], "msg": "无播放地址 len=%d cfg=%d" % (len(h), len(re.findall("data-config", h)))}
+            return {"list": [], "msg": "无播放地址 len=%d attr=%d cfg=%d js=%d" % (len(h), len(re.findall("data-config", h)), len(cfgs), urls_ok)}
 
         play = "#".join(["线路%d$%s" % (i + 1, u) for i, u in enumerate(urls)])
         return {"list": [{
