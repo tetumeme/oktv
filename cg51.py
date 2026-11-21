@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# 51吃瓜（51cg1）FongMi 源 v7
+# 51吃瓜（51cg1）FongMi 源 v8
 # 域名从 cg51.com 发布页解析；列表用 post-card，详情播放地址在 dplayer 的 data-config JSON。
 import gzip
 import html as html_lib
@@ -156,7 +156,13 @@ class Spider(BaseSpider):
         if not url:
             return ""
         try:
-            return self.getProxyUrl({"url": url})
+            u = self.getProxyUrl({"url": url})
+            if u and u.startswith("http"):
+                return u
+        except Exception:
+            pass
+        try:
+            return "http://127.0.0.1:9978/proxy?do=py&siteKey=cg51v5&url=" + quote(url, safe="")
         except Exception:
             return url
 
@@ -244,10 +250,13 @@ class Spider(BaseSpider):
         name = (name or "").replace("$", " ").replace("#", " ").strip()
 
         pic = ""
-        for pat in (r'<meta property="og:image" content="([^"]*)"', r'x-bg-loader-url="([^"]+)"'):
+        for pat in (r'x-bg-loader-url="([^"]+)"', r'<meta property="og:image" content="([^"]*)"'):
             m = re.search(pat, h)
             if m:
-                pic = self._pic(html_lib.unescape(m.group(1)))
+                cand = html_lib.unescape(m.group(1))
+                if "social-default" in cand:
+                    continue
+                pic = self._pic(cand)
                 break
 
         desc = ""
