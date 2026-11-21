@@ -167,34 +167,34 @@ class Spider(BaseSpider):
         if not vid:
             return {"list": []}
         h = self._get("/video/%s/" % vid)
-        if not h:
-            return {"list": []}
-        m = re.search(r"<h1[^>]*>([\s\S]*?)</h1>", h)
+        diag = "空页"
+        if h:
+            diag = "无线路 h=%d" % len(h)
+        m = re.search(r"<h1[^>]*>([\s\S]*?)</h1>", h or "")
         name = self._clean(m.group(1)) if m else vid
-        pic = ""
-        pm = re.search(r'property="og:image" content="([^"]*)"', h)
-        if pm:
-            pic = self._abs(pm.group(1))
-        if not pic:
-            pm = re.search(r'<img[^>]+data-src="([^"]+)"', h)
-            if pm:
-                pic = self._abs(pm.group(1))
+        pic = HOST + "/share/video/" + vid + "/cover"
+        desc = ""
+        dm = re.search(r'property="og:description" content="([^"]*)"', h or "")
+        if dm:
+            desc = self._clean(dm.group(1))
+        if not desc:
+            dm = re.search(r'name="description" content="([^"]*)"', h or "")
+            if dm:
+                desc = self._clean(dm.group(1))
         eps = []
         seen = set()
-        for sm in re.finditer(r'data-play-id="(\d+)"[^>]*?data-play-src="([^"]+)"', h):
-            src = html_lib.unescape(sm.group(2))
+        for sm in re.finditer(r'data-play-src="([^"]+)"', h or ""):
+            src = html_lib.unescape(sm.group(1))
             if not src.startswith("http") or src in seen:
                 continue
             seen.add(src)
             eps.append(("第%d集" % (len(eps) + 1), src))
-        if not eps:
-            return {"list": []}
         return {"list": [{
             "vod_id": vid,
             "vod_name": name,
             "vod_pic": pic,
-            "vod_remarks": ("共%d集" % len(eps)) if len(eps) > 1 else "",
-            "vod_content": "",
+            "vod_remarks": ("共%d集" % len(eps)) if len(eps) > 1 else diag,
+            "vod_content": desc,
             "vod_play_from": "51短剧",
             "vod_play_url": "#".join(["%s$%s" % (lb, u) for lb, u in eps]),
         }]}
