@@ -163,7 +163,7 @@ class Spider(BaseSpider):
         if not kw:
             return {"list": []}
         page = int(pg) if str(pg).isdigit() else 1
-        cards = self._cards(self._get("/cn/search?q=" + quote(kw) + "&page=" + str(page)))
+        cards = self._cards(self._get("/cn/search?keyword=" + quote(kw) + "&page=" + str(page)))
         return {"list": cards, "page": page, "pagecount": 999,
                 "limit": len(cards), "total": 999999}
 
