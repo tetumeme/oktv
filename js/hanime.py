@@ -207,6 +207,8 @@ class Spider(BaseSpider):
             m = re.search(r'<meta name="description" content="(.*?)"', html)
             if m:
                 content = html_parser.unescape(m.group(1)).strip()
+        if content.startswith(title):
+            content = content[len(title):].strip()
         if content == title:
             content = ""
         return {'list': [{
