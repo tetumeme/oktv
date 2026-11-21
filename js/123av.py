@@ -131,7 +131,9 @@ class Spider(BaseSpider):
             if vid in seen:
                 continue
             seen.add(vid)
-            im = re.search(r'class="card__img"[^>]*src="([^"]+)"', seg)
+            im = re.search(r'data-preview="([^"]+)"', seg)
+            if not im:
+                im = re.search(r'class="card__img"[^>]*src="([^"]+)"', seg)
             tm = re.search(r'class="card__title"[^>]*>([\s\S]{0,400}?)</', seg)
             dm = re.search(r'class="card__dur">([^<]*)<', seg)
             out.append({
