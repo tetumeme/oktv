@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# 51吃瓜（51cg1）FongMi 源 v2
+# 51吃瓜（51cg1）FongMi 源 v4
 # 域名从 cg51.com 发布页解析；列表用 post-card，详情播放地址在 dplayer 的 data-config JSON。
 import gzip
 import html as html_lib
@@ -143,6 +143,14 @@ class Spider(BaseSpider):
         return self.host
 
     # ---------- 解析 ----------
+    def _pic(self, url):
+        if not url:
+            return ""
+        try:
+            return self.getProxyUrl({"url": url})
+        except Exception:
+            return url
+
     def _txt(self, s):
         s = re.sub(r"<[^>]+>", "", s or "")
         s = html_lib.unescape(s)
@@ -158,7 +166,7 @@ class Spider(BaseSpider):
             t = re.search(r'<h2 class="post-card-title"[^>]*>(.*?)</h2>', seg, re.S)
             name = self._txt(t.group(1)) if t else vid
             b = re.search(r'x-bg-loader-url="([^"]+)"', seg)
-            pic = html_lib.unescape(b.group(1)) if b else ""
+            pic = self._pic(html_lib.unescape(b.group(1))) if b else ""
             out.append({"vod_id": vid, "vod_name": name, "vod_pic": pic, "vod_remarks": ""})
         return out
 
@@ -210,7 +218,7 @@ class Spider(BaseSpider):
         for pat in (r'<meta property="og:image" content="([^"]*)"', r'x-bg-loader-url="([^"]+)"'):
             m = re.search(pat, h)
             if m:
-                pic = html_lib.unescape(m.group(1))
+                pic = self._pic(html_lib.unescape(m.group(1)))
                 break
 
         desc = ""
@@ -219,7 +227,8 @@ class Spider(BaseSpider):
             desc = html_lib.unescape(m.group(1))
 
         urls = []
-        for c in re.findall(r'data-config="([^"]*)"', h):
+        cfgs = re.findall(r'data-config="([^"]*)"', h) + re.findall(r"data-config='([^']*)'", h)
+        for c in cfgs:
             try:
                 j = json.loads(html_lib.unescape(c))
             except Exception:
