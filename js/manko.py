@@ -105,10 +105,10 @@ class Spider(BaseSpider):
                 self._ctx = False
         return self._ctx
 
-    def _open(self, url, timeout=25, api=False):
+    def _open(self, url, timeout=25, api=False, referer=None):
         headers = {
             "User-Agent": UA,
-            "Referer": self.host + "/",
+            "Referer": referer or (self.host + "/"),
         }
         if api:
             headers["Origin"] = self.host
@@ -162,7 +162,12 @@ class Spider(BaseSpider):
         if not code:
             self._dbg = "无 code(" + str(embed or "")[:40] + ")"
             return ""
-        body, ctype = self._open(EMBED + "/stream?id=" + code)
+        body = None
+        ctype = ""
+        for ref in ("https://manko.fun/", "https://123av.com/", "https://sadie-shop.site/"):
+            body, ctype = self._open(EMBED + "/stream?id=" + code, referer=ref)
+            if body:
+                break
         if not body:
             self._dbg = "stream 空 " + code
             return ""
@@ -185,8 +190,8 @@ class Spider(BaseSpider):
     def _proxy(self, url):
         return "http://127.0.0.1:9978/proxy?do=py&url=" + quote(url, safe="")
 
-    def _media(self, url):
-        hd = {"User-Agent": UA, "Referer": self.host + "/"}
+    def _media(self, url, referer=None):
+        hd = {"User-Agent": UA, "Referer": referer or (self.host + "/")}
         err = ""
         try:
             net = getattr(self, "net", None)
@@ -207,7 +212,7 @@ class Spider(BaseSpider):
                     err = "net bad"
         except Exception as e:
             err = "net err " + str(e)[:60]
-        body, ctype = self._open(url)
+        body, ctype = self._open(url, referer=referer)
         if body is None:
             return None, "", err
         return body, ctype, ""
@@ -381,7 +386,13 @@ class Spider(BaseSpider):
         if not target:
             return [404, "text/plain", b"Not Found", {}]
 
-        body, ctype, perr = self._media(target)
+        body = None
+        ctype = ""
+        perr = ""
+        for ref in ("https://sadie-shop.site/", "https://123av.com/", self.host + "/"):
+            body, ctype, perr = self._media(target, ref)
+            if body is not None:
+                break
         if body is None:
             return [502, "text/plain", ("upstream failed: " + str(perr)).encode("utf-8"), {}]
 
