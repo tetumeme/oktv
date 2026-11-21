@@ -141,6 +141,7 @@ class Spider(BaseSpider):
                 "vod_name": self._clean(tm.group(1)) if tm else vid,
                 "vod_pic": im.group(1) if im else "",
                 "vod_remarks": self._clean(dm.group(1)) if dm else "",
+                "style": {"type": "rect", "ratio": 1.5},
             })
         return out
 
@@ -207,6 +208,14 @@ class Spider(BaseSpider):
                 stream = ""
             if stream:
                 break
+        info = []
+        for _im in re.finditer(r"<dt>([^<]{1,20})</dt>\s*<dd[^>]*>([\s\S]{0,400}?)</dd>", h):
+            _ik = self._clean(_im.group(1))
+            _iraw = _im.group(2)
+            _chips = re.findall(r"<a[^>]*>([^<]{1,40})</a>", _iraw)
+            _iv = " · ".join(self._clean(x) for x in _chips) if _chips else self._clean(_iraw)
+            if _ik and _iv:
+                info.append("%s：%s" % (_ik, _iv))
         diag = "h=%d code=%d" % (len(h), len(codes))
         if not stream:
             diag = diag + " resp=" + self._clean(resp)[:90]
@@ -215,7 +224,7 @@ class Spider(BaseSpider):
             "vod_name": title or vid,
             "vod_pic": pic,
             "vod_remarks": "" if stream else diag,
-            "vod_content": "",
+            "vod_content": "\n".join(info),
             "vod_play_from": "123AV",
             "vod_play_url": ("正片$" + stream) if stream else "",
         }]}
