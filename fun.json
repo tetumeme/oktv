@@ -53,9 +53,9 @@
   },
   {
    "key": "py_51短剧",
-   "name": "51短剧[py]",
+   "name": "51短剧[py] v2",
    "type": 3,
-   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/duanju51.py",
+   "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/duanju51.py?v=2",
    "ext": ""
   },
   {
