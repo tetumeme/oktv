@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# 51吃瓜（51cg1）FongMi 源 v8
+# 51吃瓜（51cg1）FongMi 源 v9
 # 域名从 cg51.com 发布页解析；列表用 post-card，详情播放地址在 dplayer 的 data-config JSON。
 import gzip
 import html as html_lib
@@ -323,4 +323,14 @@ class Spider(BaseSpider):
                 else:
                     out.append(line)
             return [200, "application/vnd.apple.mpegurl", "\n".join(out).encode("utf-8"), {}]
-        return [200, ctype or "application/octet-stream", body, {}]
+        path = target.split("?")[0].lower()
+        mime = ctype or "application/octet-stream"
+        if path.endswith(".jpg") or path.endswith(".jpeg"):
+            mime = "image/jpeg"
+        elif path.endswith(".png"):
+            mime = "image/png"
+        elif path.endswith(".gif"):
+            mime = "image/gif"
+        elif path.endswith(".webp"):
+            mime = "image/webp"
+        return [200, mime, body, {}]
