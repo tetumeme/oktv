@@ -184,6 +184,18 @@
         return s.replace(/\s+/g, " ").trim();
     }
 
+    function diagItem(h) {
+        var s = String(h || "");
+        var posts = (s.match(/class=['"]post/g) || []).length;
+        var h3 = (s.match(/<h3/g) || []).length;
+        return {
+            vod_id: "diag",
+            vod_name: "诊断 len=" + s.length + " post=" + posts + " h3=" + h3,
+            vod_pic: "",
+            vod_remarks: s.slice(0, 40)
+        };
+    }
+
     function parseList(h) {
         var out = [], seen = {};
         var re = /<div class=['"]post\s[^'"]*['"][\s\S]{0,5000}?<\/h3>/g, m;
@@ -280,13 +292,16 @@
     var GmSpider = {
         homeContent: function () {
             var h = xhr("/zh/");
-            return { class: CATS.slice(0), filters: {}, list: parseList(h) };
+            var list = parseList(h);
+            if (!list.length) list.push(diagItem(h));
+            return { class: CATS.slice(0), filters: {}, list: list };
         },
         categoryContent: function (tid, pg) {
             var t = String(tid || "censored");
             var page = parseInt(pg, 10) || 1;
             var h = xhr("/zh/" + t + "_list/all/" + page + ".html");
             var cs = parseList(h);
+            if (!cs.length) cs.push(diagItem(h));
             return { list: cs, page: page, pagecount: pageCount(h, t), limit: cs.length, total: cs.length };
         },
         searchContent: function (key, quick, pg) {
