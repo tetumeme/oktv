@@ -134,7 +134,7 @@ class Spider(BaseSpider):
             out.append({
                 "vod_id": vid,
                 "vod_name": name,
-                "vod_pic": self._abs(p.group(1)) if p else "",
+                "vod_pic": HOST + "/share/video/" + vid + "/cover",
                 "vod_remarks": self._clean(e.group(1)) if e else "",
             })
         return out
