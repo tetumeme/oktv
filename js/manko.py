@@ -319,7 +319,28 @@ class Spider(BaseSpider):
             if isinstance(backs, list) and backs:
                 pic = str(backs[0])
 
-        desc = str(d.get("discription") or "").strip()
+        raw = d.get("discription")
+        desc = ""
+        if isinstance(raw, list):
+            alt = ""
+            for item in raw:
+                if not isinstance(item, dict):
+                    continue
+                ov = str(item.get("overview") or "").strip()
+                if not ov:
+                    continue
+                lang = str(item.get("language") or "")
+                if lang == "zh":
+                    desc = ov
+                    break
+                if lang == "tw" and not alt:
+                    alt = ov
+                if not alt:
+                    alt = ov
+            if not desc:
+                desc = alt
+        else:
+            desc = str(raw or "").strip()
         meta = []
         if d.get("video_duration"):
             meta.append("时长 " + str(d.get("video_duration")))
@@ -339,7 +360,7 @@ class Spider(BaseSpider):
         play = ""
         stream = self._resolve(d.get("wasabi_embed_url"))
         if stream:
-            play = "正片$" + stream
+            play = "正片$" + self._proxy(stream)
         else:
             u = str(d.get("wasabi_url_1") or "")
             if u.startswith("http"):
