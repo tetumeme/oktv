@@ -7,80 +7,56 @@
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/caiji.py?v=5",
    "ext": "https://www.jingpinx.com/api.php/provide/vod/",
    "searchable": 1,
-   "quickSearch": 1,
-   "style": {
-    "type": "list"
-   }
+   "quickSearch": 1
   },
   {
    "key": "py_porn",
    "name": "肉视频[py]",
    "type": 3,
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/porn.py?v=6",
-   "ext": "",
-   "style": {
-    "type": "list"
-   }
+   "ext": ""
   },
   {
    "key": "py_huangguo",
    "name": "黄果短剧[py]",
    "type": 3,
    "api": "https://raw.githubusercontent.com/cluntop/tvbox/main/js/ss/huangguo.py",
-   "ext": "",
-   "style": {
-    "type": "list"
-   }
+   "ext": ""
   },
   {
    "key": "py_huangguo2",
    "name": "黄果剧场[py][需大陆IP]",
    "type": 3,
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/huangguo.py",
-   "ext": "",
-   "style": {
-    "type": "list"
-   }
+   "ext": ""
   },
   {
    "key": "py_huangguo2",
    "name": "黄果剧场[py]",
    "type": 3,
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/huangguo.py",
-   "ext": "",
-   "style": {
-    "type": "list"
-   }
+   "ext": ""
   },
   {
    "key": "py_rolizxwnoble",
    "name": "AI绅士短剧[py]",
    "type": 3,
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/luolun.py",
-   "ext": "",
-   "style": {
-    "type": "list"
-   }
+   "ext": ""
   },
   {
    "key": "py_Youavhub",
    "name": "Youavhub[py]",
    "type": 3,
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/youav.py?v=3",
-   "ext": "",
-   "style": {
-    "type": "list"
-   }
+   "ext": ""
   },
   {
    "key": "py_51短剧",
    "name": "51短剧[py] v8",
    "type": 3,
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/duanju51.py?v=8",
-   "ext": "",
-   "style": {
-    "type": "list"
-   }
+   "ext": ""
   },
   {
    "key": "Jable",
@@ -93,7 +69,8 @@
    "filterable": 1,
    "timeout": 60,
    "style": {
-    "type": "list"
+    "type": "rect",
+    "ratio": 1.48
    },
    "api": "csp_GM",
    "ext": {
@@ -140,7 +117,8 @@
    "searchable": 1,
    "quickSearch": 1,
    "style": {
-    "type": "list"
+    "type": "rect",
+    "ratio": 1.48
    }
   },
   {
@@ -154,7 +132,8 @@
    "filterable": 1,
    "timeout": 60,
    "style": {
-    "type": "list"
+    "type": "rect",
+    "ratio": 1.49
    },
    "api": "csp_GM",
    "ext": {
@@ -201,7 +180,8 @@
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/caiji.py?v=5",
    "searchable": 1,
    "style": {
-    "type": "list"
+    "type": "rect",
+    "ratio": 1.33
    },
    "changeable": 1,
    "ext": "https://apidanaizi.com/api.php/provide/vod",
@@ -214,10 +194,7 @@
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/caiji.py?v=5",
    "ext": "https://shayuapi.com/api.php/provide/vod/",
    "searchable": 1,
-   "quickSearch": 1,
-   "style": {
-    "type": "list"
-   }
+   "quickSearch": 1
   },
   {
    "key": "XMVideo",
@@ -226,10 +203,7 @@
    "api": "csp_XMVideo",
    "searchable": 1,
    "filterable": 1,
-   "jar": "https://raw.githubusercontent.com/guot55/yg/main/jar/182.jar",
-   "style": {
-    "type": "list"
-   }
+   "jar": "https://raw.githubusercontent.com/guot55/yg/main/jar/182.jar"
   },
   {
    "key": "Zuise",
@@ -240,11 +214,9 @@
    "changeable": 1,
    "filterable": 1,
    "timeout": 60,
-   "ext": "proxy",
-   "style": {
-    "type": "list"
-   }
+   "ext": "proxy"
   },
+
   {
    "key": "pornhub",
    "name": "Pornhub[py]",
@@ -254,10 +226,7 @@
    "quickSearch": 1,
    "filterable": 0,
    "changeable": 0,
-   "ext": "proxy",
-   "style": {
-    "type": "list"
-   }
+   "ext": "proxy"
   },
   {
    "key": "麻豆视频",
@@ -267,10 +236,7 @@
    "searchable": 1,
    "quickSearch": 1,
    "filterable": 1,
-   "ext": "https://91md.me/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://91md.me/api.php/provide/vod/"
   },
   {
    "key": "香奶儿资源站",
@@ -279,10 +245,7 @@
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/caiji.py?v=5",
    "searchable": 1,
    "quickSearch": 1,
-   "ext": "https://www.gdlsp.com/api/xml.php",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://www.gdlsp.com/api/xml.php"
   },
   {
    "key": "Hanime",
@@ -294,7 +257,8 @@
    "timeout": 60,
    "ext": "proxy",
    "style": {
-    "type": "list"
+    "type": "rect",
+    "ratio": 0.68
    }
   },
   {
@@ -308,7 +272,8 @@
    "filterable": 1,
    "timeout": 60,
    "style": {
-    "type": "list"
+    "type": "rect",
+    "ratio": 1.485
    },
    "api": "csp_GM",
    "ext": {
@@ -349,10 +314,7 @@
    "quickSearch": 1,
    "filterable": 1,
    "changeable": 0,
-   "ext": "null$$$https://www.javbus.com$$$proxy",
-   "style": {
-    "type": "list"
-   }
+   "ext": "null$$$https://www.javbus.com$$$proxy"
   },
   {
    "key": "csp_JavDb",
@@ -363,10 +325,7 @@
    "quickSearch": 1,
    "filterable": 1,
    "changeable": 0,
-   "ext": "null$$$https://www.javdb.com$$$proxy",
-   "style": {
-    "type": "list"
-   }
+   "ext": "null$$$https://www.javdb.com$$$proxy"
   },
   {
    "key": "csp_Netflav",
@@ -379,10 +338,7 @@
    "quickSearch": 1,
    "changeable": 1,
    "filterable": 0,
-   "timeout": 60,
-   "style": {
-    "type": "list"
-   }
+   "timeout": 60
   },
   {
    "key": "奥斯卡",
@@ -392,10 +348,7 @@
    "searchable": 1,
    "quickSearch": 1,
    "filterable": 1,
-   "ext": "https://aosikazy.com/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://aosikazy.com/api.php/provide/vod/"
   },
   {
    "key": "大地",
@@ -405,10 +358,7 @@
    "searchable": 1,
    "quickSearch": 1,
    "filterable": 0,
-   "ext": "https://dadiapi.com/apple_m3u8.php",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://dadiapi.com/apple_m3u8.php"
   },
   {
    "key": "番号",
@@ -418,10 +368,7 @@
    "searchable": 1,
    "quickSearch": 1,
    "filterable": 0,
-   "ext": "http://fhapi9.com/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "http://fhapi9.com/api.php/provide/vod/"
   },
   {
    "key": "鲨鱼",
@@ -431,10 +378,7 @@
    "searchable": 1,
    "quickSearch": 1,
    "filterable": 1,
-   "ext": "https://shayuapi.com/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://shayuapi.com/api.php/provide/vod/"
   },
   {
    "key": "小湿妹",
@@ -443,10 +387,7 @@
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/caiji.py?v=5",
    "searchable": 1,
    "quickSearch": 1,
-   "ext": "http://www.afasu.com/api/xml.php",
-   "style": {
-    "type": "list"
-   }
+   "ext": "http://www.afasu.com/api/xml.php"
   },
   {
    "key": "辣椒",
@@ -457,10 +398,7 @@
    "searchable": 1,
    "quickSearch": 1,
    "filterable": 1,
-   "ext": "https://apilj.com/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://apilj.com/api.php/provide/vod/"
   },
   {
    "key": "黄AV资源站",
@@ -469,10 +407,7 @@
    "api": "https://raw.githubusercontent.com/tetumeme/oktv/main/js/caiji.py?v=5",
    "searchable": 1,
    "quickSearch": 1,
-   "ext": "https://www.pgxdy.com/api/xml.php",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://www.pgxdy.com/api/xml.php"
   },
   {
    "key": "奶香香",
@@ -482,10 +417,7 @@
    "quickSearch": 1,
    "searchable": 1,
    "changeable": 1,
-   "ext": "https://naixxzy.com/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://naixxzy.com/api.php/provide/vod/"
   },
   {
    "key": "155资源站",
@@ -495,10 +427,7 @@
    "quickSearch": 1,
    "searchable": 1,
    "changeable": 1,
-   "ext": "https://155api.com/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://155api.com/api.php/provide/vod/"
   },
   {
    "key": "鸡坤",
@@ -508,10 +437,7 @@
    "quickSearch": 1,
    "searchable": 1,
    "changeable": 1,
-   "ext": "https://jkunzyapi.com/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://jkunzyapi.com/api.php/provide/vod/"
   },
   {
    "key": "乐播",
@@ -521,10 +447,7 @@
    "quickSearch": 1,
    "searchable": 1,
    "changeable": 1,
-   "ext": "https://lbapi9.com/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://lbapi9.com/api.php/provide/vod/"
   },
   {
    "key": "玉兔",
@@ -534,10 +457,7 @@
    "searchable": 1,
    "quickSearch": 1,
    "filterable": 1,
-   "ext": "https://apiyutu.com/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://apiyutu.com/api.php/provide/vod/"
   },
   {
    "key": "森林专场",
@@ -548,10 +468,7 @@
    "searchable": 1,
    "quickSearch": 1,
    "filterable": 1,
-   "ext": "https://slapibf.com/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://slapibf.com/api.php/provide/vod/"
   },
   {
    "key": "嘿嘿场",
@@ -562,10 +479,7 @@
    "searchable": 1,
    "quickSearch": 1,
    "filterable": 1,
-   "ext": "https://api.heiapi.cc/api.php/provide/vod/",
-   "style": {
-    "type": "list"
-   }
+   "ext": "https://api.heiapi.cc/api.php/provide/vod/"
   },
   {
    "key": "kanliao",
@@ -576,7 +490,8 @@
    "searchable": 1,
    "quickSearch": 1,
    "style": {
-    "type": "list"
+    "type": "rect",
+    "ratio": 1.34
    }
   },
   {
@@ -588,7 +503,8 @@
    "searchable": 1,
    "quickSearch": 1,
    "style": {
-    "type": "list"
+    "type": "rect",
+    "ratio": 1.5
    }
   }
  ],
